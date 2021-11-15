@@ -1,0 +1,272 @@
+﻿<ResourceDictionary
+    x:Class="NINA.Plugins.PixInsightTools.Dockables.DockableDataTemplates"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behavior="clr-namespace:NINA.WPF.Base.Behaviors;assembly=NINA.WPF.Base"
+    xmlns:converter="clr-namespace:NINA.Core.Utility.Converters;assembly=NINA.Core"
+    xmlns:filter="clr-namespace:NINA.Core.Model;assembly=NINA.Core"
+    xmlns:local="clr-namespace:NINA.Plugins.PixInsightTools.Dockables"
+    xmlns:mini="clr-namespace:NINA.View.Sequencer.MiniSequencer;assembly=NINA.Sequencer"
+    xmlns:nina="clr-namespace:NINA.View.Sequencer;assembly=NINA.Sequencer"
+    xmlns:ninactrl="clr-namespace:NINACustomControlLibrary;assembly=NINACustomControlLibrary"
+    xmlns:ns="clr-namespace:NINA.Core.Locale;assembly=NINA.Core"
+    xmlns:properties="clr-namespace:NINA.Plugins.PixInsightTools.Properties"
+    xmlns:rules="clr-namespace:NINA.Core.Utility.ValidationRules;assembly=NINA.Core"
+    xmlns:util="clr-namespace:NINA.Core.Utility;assembly=NINA.Core">
+
+    <DataTemplate x:Key="NINA.Plugins.PixInsightTools.Dockables.LiveStackVM_Dockable">
+        <Grid x:Name="PART_TheGrid" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Expander
+                    VerticalAlignment="Center"
+                    Header="Flat Master Session Library"
+                    IsExpanded="True">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <DataGrid
+                            AutoGenerateColumns="False"
+                            CanUserAddRows="False"
+                            ItemsSource="{Binding FlatLibrary}"
+                            SelectionMode="Single"
+                            VerticalScrollBarVisibility="Auto">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="2*" Header="File Location">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock VerticalAlignment="Center" Text="{Binding Path}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="*" Header="Filter">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock VerticalAlignment="Center" Text="{Binding Filter}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="*" Header="Width">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock VerticalAlignment="Center" Text="{Binding Width}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="*" Header="Height">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock VerticalAlignment="Center" Text="{Binding Height}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="30" Header="">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button
+                                                Command="{Binding DataContext.DeleteFlatMasterCommand, ElementName=PART_TheGrid}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource BackgroundButton}">
+                                                <Path
+                                                    Height="15"
+                                                    Margin="0"
+                                                    Data="{StaticResource TrashCanSVG}"
+                                                    Fill="{StaticResource ButtonForegroundBrush}"
+                                                    Stretch="Uniform" />
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Button
+                            Grid.Row="1"
+                            Height="25"
+                            Margin="0,5,0,5"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Top"
+                            Command="{Binding AddFlatFrameCommand}">
+                            Add Flat Master
+                        </Button>
+                        <Button
+                            Grid.Row="2"
+                            Height="25"
+                            Margin="0,5,0,5"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Top"
+                            Command="{Binding AddColorCombinationCommand}">
+                            Add color combination
+                        </Button>
+                    </Grid>
+                </Expander>
+
+                <ninactrl:AsyncProcessButton
+                    Grid.Column="1"
+                    Height="25"
+                    MinWidth="150"
+                    Margin="5,0,0,6"
+                    Padding="5"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    ButtonText="Start Live Stack"
+                    CancelButtonImage="{DynamicResource StopSVG}"
+                    CancelCommand="{Binding CancelLiveStackCommand}"
+                    Command="{Binding StartLiveStackCommand}" />
+            </Grid>
+            <TabControl
+                Grid.Row="1"
+                VerticalAlignment="Stretch"
+                ItemsSource="{Binding FilterTabs}"
+                SelectedItem="{Binding SelectedTab}">
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Viewbox Stretch="Uniform">
+                                <Canvas
+                                    Width="{Binding ActualWidth, ElementName=PART_Image}"
+                                    Height="{Binding ActualHeight, ElementName=PART_Image}"
+                                    behavior:MouseCommandBehavior.Enabled="True"
+                                    behavior:MouseCommandBehavior.LeftMouseDownCommand="{Binding LeftMouseButtonDownCommand}"
+                                    ClipToBounds="True">
+                                    <Canvas.Background>
+                                        <VisualBrush>
+                                            <VisualBrush.Visual>
+                                                <Image
+                                                    x:Name="PART_Image"
+                                                    RenderOptions.BitmapScalingMode="HighQuality"
+                                                    Source="{Binding Stack}"
+                                                    Stretch="Uniform" />
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </Canvas.Background>
+                                </Canvas>
+                            </Viewbox>
+
+                            <StackPanel
+                                Margin="5,0,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Bottom"
+                                Background="{StaticResource SecondaryBackgroundBrush}"
+                                Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Images in stack: " />
+                                    <TextBlock Text="{Binding Count}" />
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock VerticalAlignment="Center" Text="Do ABE?" />
+                                    <CheckBox Margin="5,0,0,0" IsChecked="{Binding EnableABE, Mode=TwoWay}" />
+                                    <TextBlock
+                                        Margin="5,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Text="ABE function degree:" />
+                                    <TextBox
+                                        MinWidth="30"
+                                        Margin="5,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding ABEDegree}" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <Button
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Command="{Binding DataContext.RemoveTabCommand, ElementName=PART_TheGrid}"
+                                CommandParameter="{Binding}">
+                                <TextBlock Padding="5,0,5,0" Text="Remove Stack" />
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Target}" />
+                            <TextBlock Text=" - " />
+                            <TextBlock Text="{Binding Filter}" />
+                        </StackPanel>
+
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+
+            </TabControl>
+
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type local:ColorCombinationPrompt}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Target" />
+            <ComboBox
+                Grid.Column="1"
+                ItemsSource="{Binding Targets}"
+                SelectedItem="{Binding Target}" />
+
+            <TextBlock Grid.Row="1" Text="Red Channel" />
+            <ComboBox
+                Grid.Row="1"
+                Grid.Column="1"
+                DisplayMemberPath="Filter"
+                ItemsSource="{Binding FilterTabs}"
+                SelectedItem="{Binding RedChannel}" />
+
+            <TextBlock Grid.Row="2" Text="Green Channel" />
+            <ComboBox
+                Grid.Row="2"
+                Grid.Column="1"
+                DisplayMemberPath="Filter"
+                ItemsSource="{Binding FilterTabs}"
+                SelectedItem="{Binding GreenChannel}" />
+
+            <TextBlock Grid.Row="3" Text="Blue Channel" />
+            <ComboBox
+                Grid.Row="3"
+                Grid.Column="1"
+                DisplayMemberPath="Filter"
+                ItemsSource="{Binding FilterTabs}"
+                SelectedItem="{Binding BlueChannel}" />
+
+
+
+            <Button
+                Grid.Row="4"
+                Height="25"
+                Margin="5"
+                util:ButtonHelper.DialogResult="False">
+                <TextBlock Foreground="{StaticResource ButtonForegroundBrush}" Text="{ns:Loc LblCancel}" />
+            </Button>
+
+            <Button
+                Grid.Row="4"
+                Grid.Column="1"
+                Height="25"
+                Margin="5"
+                util:ButtonHelper.DialogResult="True"
+                Command="{Binding ContinueCommand}">
+                <TextBlock Foreground="{StaticResource ButtonForegroundBrush}" Text="{ns:Loc LblOK}" />
+            </Button>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

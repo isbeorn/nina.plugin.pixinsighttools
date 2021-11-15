@@ -1,0 +1,55 @@
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+// General Information about an assembly is controlled through the following
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+[assembly: AssemblyTitle("PixInsight Tools")]
+[assembly: AssemblyDescription("A bundle of tools to interact with PixInsight from N.I.N.A.")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Stefan Berg")]
+[assembly: AssemblyProduct("NINA.Plugins")]
+[assembly: AssemblyCopyright("Copyright ©  2021")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+
+// Setting ComVisible to false makes the types in this assembly not visible
+// to COM components.  If you need to access a type in this assembly from
+// COM, set the ComVisible attribute to true on that type.
+[assembly: ComVisible(false)]
+
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: Guid("6ac8f0ab-4455-4072-9fb0-734b9e97e3ce")]
+
+[assembly: InternalsVisibleTo("NINA.Plugins.Test")]
+
+//The assembly versioning
+//Should be incremented for each new release build of a plugin
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
+
+//The minimum Version of N.I.N.A. that this plugin is compatible with
+[assembly: AssemblyMetadata("MinimumApplicationVersion", "2.0.0.2001")]
+
+//Your plugin homepage - omit if not applicaple
+[assembly: AssemblyMetadata("Homepage", "https://www.patreon.com/stefanberg/")]
+//The license your plugin code is using
+[assembly: AssemblyMetadata("License", "MPL-2.0")]
+//The url to the license
+[assembly: AssemblyMetadata("LicenseURL", "https://www.mozilla.org/en-US/MPL/2.0/")]
+//The repository where your pluggin is hosted
+[assembly: AssemblyMetadata("Repository", "https://bitbucket.org/Isbeorn/nina.plugins/src/master/NINA.Plugin.Notification/NINA.Plugins.PixInsightTools/")]
+
+[assembly: AssemblyMetadata("ChangelogURL", "https://bitbucket.org/Isbeorn/nina.plugins/src/master/NINA.Plugin.Notification/NINA.Plugins.PixInsightTools/Changelog.md")]
+
+//Common tags that quickly describe your plugin
+[assembly: AssemblyMetadata("Tags", "PixInsight,Sequencer")]
+
+//The featured logo that will be displayed in the plugin list next to the name
+[assembly: AssemblyMetadata("FeaturedImageURL", "")]
+//An example screenshot of your plugin in action
+[assembly: AssemblyMetadata("ScreenshotURL", "")]
+//An additional example screenshot of your plugin in action
+[assembly: AssemblyMetadata("AltScreenshotURL", "")]
+[assembly: AssemblyMetadata("LongDescription", @"")]
