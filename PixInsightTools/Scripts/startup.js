@@ -1,4 +1,4 @@
-var outputDir = jsArguments[0];
+let outputDir = jsArguments[0];
 
 console.writeln("outputDir = " + outputDir);
 

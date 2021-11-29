@@ -1,13 +1,13 @@
 function alignment() {
-    var reference = jsArguments[0];
-    var fileToCalibrate = jsArguments[1];
-    var outputDir = jsArguments[2];
+    let reference = jsArguments[0];
+    let fileToCalibrate = jsArguments[1];
+    let outputDir = jsArguments[2];
 
     console.writeln("reference = " + reference);
     console.writeln("fileToCalibrate = " + fileToCalibrate);
     console.writeln("outputDir = " + outputDir);
 
-    var sa = new StarAlignment;
+    let sa = new StarAlignment;
     sa.outputSampleFormat = StarAlignment.prototype.SameAsTarget;
     sa.writeKeywords = true;
     sa.outputPrefix = "";
@@ -24,8 +24,8 @@ function alignment() {
     sa.referenceImage = reference;
     sa.referenceIsFile = true;
 
-    var isEnabled = true;
-    var isFile = true;
+    let isEnabled = true;
+    let isFile = true;
     sa.targets = [[isEnabled, isFile, fileToCalibrate]];
 
     sa.executeGlobal();

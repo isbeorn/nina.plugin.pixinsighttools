@@ -1,22 +1,22 @@
 ﻿function abe() {
 
-    var stackFile = jsArguments[0];
-    var degree = jsArguments[1];
-    var outputFile = jsArguments[2];
-    var outputDir = jsArguments[3];
+    let stackFile = jsArguments[0];
+    let degree = jsArguments[1];
+    let outputFile = jsArguments[2];
+    let outputDir = jsArguments[3];
 
     console.writeln("stackFile = " + stackFile);
     console.writeln("degree = " + degree);
     console.writeln("outputFile = " + outputFile);
     console.writeln("outputDir = " + outputDir);
 
-    var stackFileInfo = new FileInfo(stackFile);
+    let stackFileInfo = new FileInfo(stackFile);
 
     if (stackFileInfo.isFile) {
-        var stackWindow = ImageWindow.open(stackFile);
+        let stackWindow = ImageWindow.open(stackFile);
 
         if (degree > 0) {
-            var P = new AutomaticBackgroundExtractor;
+            let P = new AutomaticBackgroundExtractor;
             P.tolerance = 1.000;
             P.deviation = 0.800;
             P.unbalance = 1.800;
@@ -64,8 +64,8 @@ abe();
 
 function AutoStretch() {
     // Default STF Parameters
-    var SHADOWS_CLIP = -1.25; // Shadows clipping point measured in sigma units from the main histogram peak.
-    var TARGET_BKG = 0.25; // Target background in the [0,1] range.
+    let SHADOWS_CLIP = -1.25; // Shadows clipping point measured in sigma units from the main histogram peak.
+    let TARGET_BKG = 0.25; // Target background in the [0,1] range.
 
     /*
      * Find a midtones balance value that transforms v1 into v0 through a midtones
@@ -85,7 +85,7 @@ function AutoStretch() {
         else
             eps = 5.0e-05;
 
-        var m0, m1;
+        let m0, m1;
         if (v1 < v0) {
             m0 = 0;
             m1 = 0.5;
@@ -96,8 +96,8 @@ function AutoStretch() {
         }
 
         for (; ;) {
-            var m = (m0 + m1) / 2;
-            var v = Math.mtf(m, v1);
+            let m = (m0 + m1) / 2;
+            let v = Math.mtf(m, v1);
 
             if (Math.abs(v - v0) < eps)
                 return m;
@@ -121,11 +121,11 @@ function AutoStretch() {
 
         // Noninverted image
 
-        var c0 = 0;
-        var m = 0;
+        let c0 = 0;
+        let m = 0;
         view.image.selectedChannel = 0;
-        var median = view.image.median();
-        var avgDev = view.image.avgDev();
+        let median = view.image.median();
+        let avgDev = view.image.avgDev();
         c0 += median + shadowsClipping * avgDev;
         m += median;
         view.image.resetSelections();
@@ -138,8 +138,8 @@ function AutoStretch() {
      * STF Auto Stretch routine
      */
     this.Apply = function (view, verbose, shadowsClipping, targetBackground) {
-        var stretch = this.CalculateStretch(view, verbose, shadowsClipping, targetBackground);
-        var stf = [
+        let stretch = this.CalculateStretch(view, verbose, shadowsClipping, targetBackground);
+        let stf = [
             // m, c0, c1, r0, r1
             [stretch.m, stretch.c0, stretch.c1, 0, 1],
             [stretch.m, stretch.c0, stretch.c1, 0, 1],
@@ -159,11 +159,11 @@ function AutoStretch() {
     }
 
     this.HardApply = function (view, verbose, shadowsClipping, targetBackground) {
-        var stretch = this.CalculateStretch(view, verbose, shadowsClipping, targetBackground);
+        let stretch = this.CalculateStretch(view, verbose, shadowsClipping, targetBackground);
 
         if (stretch.c0 > 0 || stretch.m != 0.5 || stretch.c1 != 1) // if not an identity transformation
         {
-            var HT = new HistogramTransformation;
+            let HT = new HistogramTransformation;
             HT.H = [[0, 0.5, 1, 0, 1],
             [0, 0.5, 1, 0, 1],
             [0, 0.5, 1, 0, 1],

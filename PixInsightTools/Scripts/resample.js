@@ -1,9 +1,9 @@
 ﻿function resample() {
 
-    var resampleFile = jsArguments[0];
-    var amount = jsArguments[1];
-    var outputFile = jsArguments[2];
-    var outputDir = jsArguments[3];
+    let resampleFile = jsArguments[0];
+    let amount = jsArguments[1];
+    let outputFile = jsArguments[2];
+    let outputDir = jsArguments[3];
 
 
     console.writeln("resampleFile = " + resampleFile);
@@ -11,13 +11,13 @@
     console.writeln("outputFile = " + outputFile);
     console.writeln("outputDir = " + outputDir);
 
-    var resampleFileInfo = new FileInfo(resampleFile);
+    let resampleFileInfo = new FileInfo(resampleFile);
 
     if (resampleFileInfo.isFile) {
 
-        var resampleWindow = ImageWindow.open(resampleFile);
+        let resampleWindow = ImageWindow.open(resampleFile);
 
-        var P = new IntegerResample;
+        let P = new IntegerResample;
         P.zoomFactor = amount * -1;
         P.downsamplingMode = IntegerResample.prototype.Average;
         P.xResolution = 72.000;

@@ -1,12 +1,12 @@
 function calibrate() {
-    var fileToCalibrate = jsArguments[0];
-    var outputDir = jsArguments[1];
-    var masterDark = jsArguments[2];
-    var masterFlat = jsArguments[3];
-    var masterBias = jsArguments[4];
-    var compress = jsArguments[5];
-    var pedestal = jsArguments[6];
-    var saveAs16Bit = jsArguments[7];
+    let fileToCalibrate = jsArguments[0];
+    let outputDir = jsArguments[1];
+    let masterDark = jsArguments[2];
+    let masterFlat = jsArguments[3];
+    let masterBias = jsArguments[4];
+    let compress = jsArguments[5];
+    let pedestal = jsArguments[6];
+    let saveAs16Bit = jsArguments[7];
 
     fileToCalibrate = fileToCalibrate.substring(1, fileToCalibrate.length - 1);
     outputDir = outputDir.substring(1, outputDir.length - 1);
@@ -23,7 +23,7 @@ function calibrate() {
     console.writeln("pedestal = " + pedestal);
     console.writeln("saveAs16Bit = " + saveAs16Bit);
 
-    var P = new ImageCalibration;
+    let P = new ImageCalibration;
     P.targetFrames = [ // enabled, path
         [true, fileToCalibrate]
     ];

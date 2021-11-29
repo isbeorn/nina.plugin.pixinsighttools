@@ -1,9 +1,9 @@
 ﻿function flat_integration() {
 
-    var filesToIntegrate = jsArguments[0];
-    var outputDir = jsArguments[1];
-    var compress = jsArguments[2];
-    var outputFile = jsArguments[3];
+    let filesToIntegrate = jsArguments[0];
+    let outputDir = jsArguments[1];
+    let compress = jsArguments[2];
+    let outputFile = jsArguments[3];
 
     console.writeln("filesToIntegrate = " + filesToIntegrate);
     console.writeln("outputDir = " + outputDir);
@@ -16,7 +16,7 @@
         images.push([true, split[i], "", ""]);
     }
 
-    var P = new ImageIntegration;
+    let P = new ImageIntegration;
     //P.images = [ // enabled, path, drizzlePath, localNormalizationDataPath        
     //];
     P.images = images;
@@ -130,7 +130,7 @@
      */
     P.executeGlobal();
 
-    var stack = ImageWindow.activeWindow;
+    let stack = ImageWindow.activeWindow;
     stack.saveAs(outputFile, false, false, false, false);
     stack.forceClose();
 

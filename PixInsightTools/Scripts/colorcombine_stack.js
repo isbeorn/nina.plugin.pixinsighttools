@@ -1,10 +1,10 @@
 ﻿function colorcombine() {
 
-    var r = jsArguments[0];
-    var g = jsArguments[1];
-    var b = jsArguments[2];
-    var outputFile = jsArguments[3];
-    var outputDir = jsArguments[4];
+    let r = jsArguments[0];
+    let g = jsArguments[1];
+    let b = jsArguments[2];
+    let outputFile = jsArguments[3];
+    let outputDir = jsArguments[4];
 
     console.writeln("r = " + r);
     console.writeln("g = " + g);
@@ -13,21 +13,21 @@
     console.writeln("outputDir = " + outputDir);
 
 
-    var redWindow = ImageWindow.open(r);
-    var greenWindow = ImageWindow.open(g);
-    var blueWindow = ImageWindow.open(b);
+    let redWindow = ImageWindow.open(r);
+    let greenWindow = ImageWindow.open(g);
+    let blueWindow = ImageWindow.open(b);
 
-    var redId = redWindow[0].mainView.id;
+    let redId = redWindow[0].mainView.id;
 
     alignOnView(redId, greenWindow[0].mainView);
-    var greenAlignWindow = ImageWindow.activeWindow;
-    var greenId = greenAlignWindow.mainView.id;
+    let greenAlignWindow = ImageWindow.activeWindow;
+    let greenId = greenAlignWindow.mainView.id;
 
     alignOnView(redId, blueWindow[0].mainView);
-    var blueAlignWindow = ImageWindow.activeWindow;
-    var blueId = blueAlignWindow.mainView.id;
+    let blueAlignWindow = ImageWindow.activeWindow;
+    let blueId = blueAlignWindow.mainView.id;
 
-    var P = new PixelMath;
+    let P = new PixelMath;
     P.expression = redId;
     P.expression1 = greenId;
     P.expression2 = blueId;
@@ -58,13 +58,13 @@
     /*
      * Read-only properties
      *
-    P.outputData = [ // globalVariableId, globalVariableRK, globalVariableG, globalVariableB
+    P.outputData = [ // globalletiableId, globalletiableRK, globalletiableG, globalletiableB
     ];
      */
 
     P.executeOn(redWindow[0].mainView);
 
-    var colorWindow = ImageWindow.activeWindow;
+    let colorWindow = ImageWindow.activeWindow;
     redWindow[0].forceClose();
     greenWindow[0].forceClose();
     blueWindow[0].forceClose();
@@ -81,7 +81,7 @@ colorcombine();
 
 
 function alignOnView(referenceViewId, alignView) {
-    var P = new StarAlignment;
+    let P = new StarAlignment;
     P.structureLayers = 5;
     P.noiseLayers = 0;
     P.hotPixelFilterRadius = 1;

@@ -1,26 +1,26 @@
 function stack() {
 
-    var newFile = jsArguments[0];
-    var stackFile = jsArguments[1];
-    var outputDir = jsArguments[2];
+    let newFile = jsArguments[0];
+    let stackFile = jsArguments[1];
+    let outputDir = jsArguments[2];
 
     console.writeln("newFile = " + newFile);
     console.writeln("stackFile = " + stackFile);
     console.writeln("outputDir = " + outputDir);
 
-    var newInfo = new FileInfo(newFile);
-    var stackInfo = new FileInfo(stackFile);
+    let newInfo = new FileInfo(newFile);
+    let stackInfo = new FileInfo(stackFile);
 
 
     if(newInfo.isFile && stackInfo.isFile) {
-        var newWindow = ImageWindow.open(newFile);
-        var stackWindow = ImageWindow.open(stackFile);
+        let newWindow = ImageWindow.open(newFile);
+        let stackWindow = ImageWindow.open(stackFile);
 
         /* Retrieve header info about number of images */
-        var totalFiles = 2;
-        var stackNumberHeader;
+        let totalFiles = 2;
+        let stackNumberHeader;
 
-        var header = stackWindow[0].keywords;
+        let header = stackWindow[0].keywords;
 
         for(let i = 0; i < header.length; i++) {
             let entry = header[i];
@@ -46,10 +46,10 @@ function stack() {
          stackWindow[0].keywords = header;
 
 
-        var newId = newWindow[0].mainView.id;
-        var stackId = stackWindow[0].mainView.id;
+        let newId = newWindow[0].mainView.id;
+        let stackId = stackWindow[0].mainView.id;
 
-        var P = new PixelMath;
+        let P = new PixelMath;
         P.expression = "iif(" + newId + ">(" + stackId + "*2), " + stackId + ", iif(" + newId + "==0, " + stackId + ", ((" + stackId + "*" + (totalFiles - 1) + ")+" + newId + ")/" + totalFiles + "))";
         P.expression1 = "";
         P.expression2 = "";
@@ -79,7 +79,7 @@ function stack() {
         /*
         * Read-only properties
         *
-        P.outputData = [ // globalVariableId, globalVariableRK, globalVariableG, globalVariableB
+        P.outputData = [ // globalletiableId, globalletiableRK, globalletiableG, globalletiableB
         ];
         */
 
