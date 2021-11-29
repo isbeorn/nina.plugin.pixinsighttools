@@ -18,7 +18,7 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
 
         public async Task<int> Run(IProgress<ApplicationStatus> progress, CancellationToken ct) {
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = "Stacking" });
-            var result = await RunPixInsightScript($" --execute={pixInsightSlot}:\"{stackScript},{input},{stack},{workingDir}\"  --automation-mode", progress, ct);
+            var result = await RunPixInsightScript($" --execute={pixInsightSlot}:\"{stackScript},'{guid}',{input},{stack},{workingDir}\"  --automation-mode", progress, ct);
 
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = string.Empty });
 

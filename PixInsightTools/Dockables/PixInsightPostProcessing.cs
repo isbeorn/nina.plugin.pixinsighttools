@@ -22,7 +22,7 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
             var output = Path.Combine(workingDir, Path.GetFileNameWithoutExtension(input) + $"{abePostFix}.png");
 
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = "Post processing" });
-            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{abeScript},{input},{degree},{output},{workingDir}\" --automation-mode", progress, ct);
+            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{abeScript},'{guid}',{input},{degree},{output},{workingDir}\" --automation-mode", progress, ct);
 
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = string.Empty });
 

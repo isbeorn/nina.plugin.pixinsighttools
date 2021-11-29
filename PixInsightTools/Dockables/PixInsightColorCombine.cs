@@ -26,7 +26,7 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
             var output = Path.Combine(workingDir, $"STACK_{target}{colorcombinePostFix}.png");
 
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = "Combining colors" });
-            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{colorcombineScript},{r},{g},{b},{output},{workingDir}\" --automation-mode", progress, ct);
+            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{colorcombineScript},'{guid}',{r},{g},{b},{output},{workingDir}\" --automation-mode", progress, ct);
 
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = string.Empty });
 

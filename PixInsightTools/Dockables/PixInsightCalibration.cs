@@ -34,7 +34,7 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
         public async Task<string> Run(string item, IProgress<ApplicationStatus> progress, CancellationToken ct) {
 
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = $"Calibrating" });
-            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{calibrateScript},'{item}','{workingDir}','{dark}','{flat}','{bias}',{compress},{pedestal},{saveAs16Bit}\" --automation-mode", progress, ct);
+            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{calibrateScript},'{guid}','{item}','{workingDir}','{dark}','{flat}','{bias}',{compress},{pedestal},{saveAs16Bit}\" --automation-mode", progress, ct);
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = string.Empty });
 
             return Path.Combine(workingDir, Path.GetFileNameWithoutExtension(item) + $"{calibrationPostfix}.xisf");

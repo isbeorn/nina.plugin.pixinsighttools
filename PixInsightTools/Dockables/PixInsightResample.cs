@@ -22,7 +22,7 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
             var output = Path.Combine(workingDir, Path.GetFileNameWithoutExtension(input) + $"{resamplePostfix}.xisf");
 
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = "Resampling" });
-            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{resampleScript},{input},{resampleAmount},{output},{workingDir}\" --automation-mode", progress, ct);
+            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{resampleScript},'{guid}',{input},{resampleAmount},{output},{workingDir}\" --automation-mode", progress, ct);
 
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = string.Empty });
 

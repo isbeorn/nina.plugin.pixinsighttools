@@ -21,7 +21,7 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
             if (!pixInsightProcessIsRunning) {
 
                 progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = "Starting up PixInsight" });
-                await RunPixInsightScript($"--run=\"{startupScript},{workingDir}\" --automation-mode --no-startup-gui-messages --no-splash --new-instance={pixInsightSlot} --no-startup-scripts --no-startup-check-updates", progress, ct);
+                await RunPixInsightScript($"--run=\"{startupScript},'{guid}',{workingDir}\" --automation-mode --no-startup-gui-messages --no-splash --new-instance={pixInsightSlot} --no-startup-scripts --no-startup-check-updates", progress, ct);
 
                 progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = string.Empty });
 

@@ -16,11 +16,13 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
         protected int pixInsightSlot;
 
         protected string[] scriptStatusFiles;
+        protected Guid guid;
 
         public PixInsightScript(string workingDir, int pixInsightSlot, string[] scriptStatusFiles) {
             this.workingDir = workingDir;
             this.pixInsightSlot = pixInsightSlot;
             this.scriptStatusFiles = scriptStatusFiles;
+            this.guid = Guid.NewGuid();
         }
 
         protected async Task TryDeleteFile(string path) {
@@ -51,7 +53,7 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
 
         private async Task statusFileCleanup() {
             foreach (var file in scriptStatusFiles) {
-                await TryDeleteFile(Path.Combine(workingDir, file));
+                await TryDeleteFile(Path.Combine(workingDir, guid + "_" + file));
             }
         }
 
@@ -66,12 +68,12 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
             var fileContent = string.Empty;
             while(!fileExists) {
                 foreach (var file in scriptStatusFiles) {
-                    if(!File.Exists(Path.Combine(workingDir, file))) {
+                    if(!File.Exists(Path.Combine(workingDir, guid + "_" + file))) {
                         await Task.Delay(1000, ct);
                     } else {
                         fileExists = true;
 
-                        fileContent = await TryReadFile(Path.Combine(workingDir, file));
+                        fileContent = await TryReadFile(Path.Combine(workingDir, guid + "_" + file));
                     }
                 }
             }

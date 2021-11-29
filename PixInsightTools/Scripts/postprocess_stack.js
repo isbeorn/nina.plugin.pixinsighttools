@@ -1,10 +1,12 @@
 ﻿function abe() {
 
-    let stackFile = jsArguments[0];
-    let degree = jsArguments[1];
-    let outputFile = jsArguments[2];
-    let outputDir = jsArguments[3];
+    let guid = jsArguments[0].substring(1, jsArguments[0].length - 1);
+    let stackFile = jsArguments[1];
+    let degree = jsArguments[2];
+    let outputFile = jsArguments[3];
+    let outputDir = jsArguments[4];
 
+    console.writeln("guid = " + guid);
     console.writeln("stackFile = " + stackFile);
     console.writeln("degree = " + degree);
     console.writeln("outputFile = " + outputFile);
@@ -50,13 +52,13 @@
         stackWindow[0].saveAs(outputFile, false, false, false, false);
         stackWindow[0].forceClose();
 
-        console.writeln("Writing textfile: " + outputDir + "/done_abe.txt");
-        File.writeTextFile(outputDir + "/done_abe.txt", "done");
+        console.writeln("Writing textfile: " + outputDir + "/" + guid + "_" + "done_abe.txt");
+        File.writeTextFile(outputDir + "/" + guid + "_" + "done_abe.txt", "done");
     } else {
         console.writeln("Input file does not seem to exist");
 
-        console.writeln("Writing textfile: " + outputDir + "/error_abe.txt");
-        File.writeTextFile(outputDir + "/error_abe.txt", "error");
+        console.writeln("Writing textfile: " + outputDir + "/" + guid + "_" + "error_abe.txt");
+        File.writeTextFile(outputDir + "/" + guid + "_" + "error_abe.txt", "error");
     }
 }
 

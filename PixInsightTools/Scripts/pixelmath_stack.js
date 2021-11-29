@@ -1,9 +1,11 @@
 function stack() {
 
-    let newFile = jsArguments[0];
-    let stackFile = jsArguments[1];
-    let outputDir = jsArguments[2];
+    let guid = jsArguments[0].substring(1, jsArguments[0].length - 1);
+    let newFile = jsArguments[1];
+    let stackFile = jsArguments[2];
+    let outputDir = jsArguments[3];
 
+    console.writeln("guid = " + guid);
     console.writeln("newFile = " + newFile);
     console.writeln("stackFile = " + stackFile);
     console.writeln("outputDir = " + outputDir);
@@ -90,11 +92,11 @@ function stack() {
         newWindow[0].forceClose();
         stackWindow[0].forceClose();
 
-        File.writeTextFile(outputDir + "/done.txt", totalFiles.toString());
+        File.writeTextFile(outputDir + "/" + guid + "_" + "done.txt", totalFiles.toString());
     } else {
         console.writeln("Input files do not seem to exist");
 
-        File.writeTextFile(outputDir + "/error.txt", "error");
+        File.writeTextFile(outputDir + "/" + guid + "_" + "error.txt", "error");
     }
 
 }

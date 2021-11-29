@@ -1,10 +1,12 @@
 ﻿function flat_integration() {
 
-    let filesToIntegrate = jsArguments[0];
-    let outputDir = jsArguments[1];
-    let compress = jsArguments[2];
-    let outputFile = jsArguments[3];
+    let guid = jsArguments[0].substring(1, jsArguments[0].length - 1);
+    let filesToIntegrate = jsArguments[1];
+    let outputDir = jsArguments[2];
+    let compress = jsArguments[3];
+    let outputFile = jsArguments[4];
 
+    console.writeln("guid = " + guid);
     console.writeln("filesToIntegrate = " + filesToIntegrate);
     console.writeln("outputDir = " + outputDir);
     console.writeln("compress = " + compress);
@@ -134,7 +136,7 @@
     stack.saveAs(outputFile, false, false, false, false);
     stack.forceClose();
 
-    File.writeTextFile(outputDir + "/done_flatintegration.txt", "done");
+    File.writeTextFile(outputDir + "/" + guid + "_" + "done_flatintegration.txt", "done");
 }
 
 flat_integration();

@@ -20,7 +20,7 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
         }
         public async Task<string> Run(IProgress<ApplicationStatus> progress, CancellationToken ct) {
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = "Aligning" });
-            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{alignmentScript},{stack},{input},{workingDir}\"  --automation-mode", progress, ct);
+            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{alignmentScript},'{guid}',{stack},{input},{workingDir}\"  --automation-mode", progress, ct);
 
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = string.Empty });
 

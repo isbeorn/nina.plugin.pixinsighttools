@@ -1,8 +1,10 @@
 function alignment() {
-    let reference = jsArguments[0];
-    let fileToCalibrate = jsArguments[1];
-    let outputDir = jsArguments[2];
+    let guid = jsArguments[0].substring(1, jsArguments[0].length - 1);
+    let reference = jsArguments[1];
+    let fileToCalibrate = jsArguments[2];
+    let outputDir = jsArguments[3];
 
+    console.writeln("guid = " + guid);
     console.writeln("reference = " + reference);
     console.writeln("fileToCalibrate = " + fileToCalibrate);
     console.writeln("outputDir = " + outputDir);
@@ -29,7 +31,7 @@ function alignment() {
     sa.targets = [[isEnabled, isFile, fileToCalibrate]];
 
     sa.executeGlobal();
-    File.writeTextFile(outputDir + "/aligned.txt", "started");
+    File.writeTextFile(outputDir + "/" + guid + "_" + "aligned.txt", "started");
 }
 alignment();
 

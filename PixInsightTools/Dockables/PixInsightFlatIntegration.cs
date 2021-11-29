@@ -17,7 +17,7 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
             var output = Path.Combine(workingDir, $"STACK_FLAT_{filter}.xisf");
 
             progress?.Report(new ApplicationStatus() { Status = "Integrating flat" });
-            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{script},{flatsForIntegration},{workingDir},{true},{output}\" --automation-mode", progress, ct);
+            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{script},'{guid}',{flatsForIntegration},{workingDir},{true},{output}\" --automation-mode", progress, ct);
 
             progress?.Report(new ApplicationStatus() { Status = string.Empty });
 

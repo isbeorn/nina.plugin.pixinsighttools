@@ -1,11 +1,13 @@
 ﻿function colorcombine() {
 
-    let r = jsArguments[0];
-    let g = jsArguments[1];
-    let b = jsArguments[2];
-    let outputFile = jsArguments[3];
-    let outputDir = jsArguments[4];
+    let guid = jsArguments[0].substring(1, jsArguments[0].length - 1);
+    let r = jsArguments[1];
+    let g = jsArguments[2];
+    let b = jsArguments[3];
+    let outputFile = jsArguments[4];
+    let outputDir = jsArguments[5];
 
+    console.writeln("guid = " + guid);
     console.writeln("r = " + r);
     console.writeln("g = " + g);
     console.writeln("b = " + b);
@@ -73,7 +75,7 @@
 
     colorWindow.saveAs(outputFile, false, false, false, false);
     colorWindow.forceClose();
-    File.writeTextFile(outputDir + "/done_colorcombine.txt", "done");
+    File.writeTextFile(outputDir + "/" + guid + "_" + "done_colorcombine.txt", "done");
 }
 
 colorcombine();

@@ -1,12 +1,13 @@
 function calibrate() {
-    let fileToCalibrate = jsArguments[0];
-    let outputDir = jsArguments[1];
-    let masterDark = jsArguments[2];
-    let masterFlat = jsArguments[3];
-    let masterBias = jsArguments[4];
-    let compress = jsArguments[5];
-    let pedestal = jsArguments[6];
-    let saveAs16Bit = jsArguments[7];
+    let guid = jsArguments[0].substring(1, jsArguments[0].length - 1);
+    let fileToCalibrate = jsArguments[1];
+    let outputDir = jsArguments[2];
+    let masterDark = jsArguments[3];
+    let masterFlat = jsArguments[4];
+    let masterBias = jsArguments[5];
+    let compress = jsArguments[6];
+    let pedestal = jsArguments[7];
+    let saveAs16Bit = jsArguments[8];
 
     fileToCalibrate = fileToCalibrate.substring(1, fileToCalibrate.length - 1);
     outputDir = outputDir.substring(1, outputDir.length - 1);
@@ -14,6 +15,7 @@ function calibrate() {
     masterFlat = masterFlat.substring(1, masterFlat.length - 1);
     masterBias = masterBias.substring(1, masterBias.length - 1);
 
+    console.writeln("guid = " + guid);
     console.writeln("fileToCalibrate = " + fileToCalibrate);
     console.writeln("outputDir = " + outputDir);
     console.writeln("masterDark = " + masterDark);
@@ -114,7 +116,7 @@ function calibrate() {
 
 
     P.executeGlobal();
-    File.writeTextFile(outputDir + "/calibrated.txt", "started");
+    File.writeTextFile(outputDir + "/" + guid + "_" + "calibrated.txt", "started");
 }
 
 calibrate();

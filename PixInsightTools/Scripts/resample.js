@@ -1,11 +1,13 @@
 ﻿function resample() {
 
-    let resampleFile = jsArguments[0];
-    let amount = jsArguments[1];
-    let outputFile = jsArguments[2];
-    let outputDir = jsArguments[3];
+    let guid = jsArguments[0].substring(1, jsArguments[0].length - 1);
+    let resampleFile = jsArguments[1];
+    let amount = jsArguments[2];
+    let outputFile = jsArguments[3];
+    let outputDir = jsArguments[4];
 
 
+    console.writeln("guid = " + guid);
     console.writeln("resampleFile = " + resampleFile);
     console.writeln("amount = " + amount);
     console.writeln("outputFile = " + outputFile);
@@ -30,14 +32,14 @@
         resampleWindow[0].saveAs(outputFile, false, false, false, false);
         resampleWindow[0].forceClose();
 
-        console.writeln("Writing textfile: " + outputDir + "/done_resample.txt");
-        File.writeTextFile(outputDir + "/done_resample.txt", "done");
+        console.writeln("Writing textfile: " + outputDir + "/" + guid + "_" + "done_resample.txt");
+        File.writeTextFile(outputDir + "/" + guid + "_" + "done_resample.txt", "done");
 
     } else {
         console.writeln("Input file does not seem to exist");
 
-        console.writeln("Writing textfile: " + outputDir + "/error_resample.txt");
-        File.writeTextFile(outputDir + "/error_resample.txt", "error");
+        console.writeln("Writing textfile: " + outputDir + "/" + guid + "_" + "error_resample.txt");
+        File.writeTextFile(outputDir + "/" + guid + "_" + "error_resample.txt", "error");
     }
 }
 
