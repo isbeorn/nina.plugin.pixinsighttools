@@ -18,13 +18,13 @@ using System.Threading.Tasks;
 
 namespace NINA.Plugins.PixInsightTools.Instructions {
 
-    [ExportMetadata("Name", "Stack flats and start live stacking")]
-    [ExportMetadata("Description", "This instruction will calibrate and stack flat frames, register the stacked flats for the live stack and start the live stack after being ready.")]
+    [ExportMetadata("Name", "Stack flats")]
+    [ExportMetadata("Description", "This instruction will calibrate and stack flat frames that are taken inside the current instruction set (and child instruction sets) and register the stacked flats for the live stack. Place it after your flats.")]
     [ExportMetadata("Icon", "")]
     [ExportMetadata("Category", "PixInsight Tools")]
     [Export(typeof(ISequenceItem))]
     [JsonObject(MemberSerialization.OptIn)]
-    public class StackFlatsAndStartLiveStacking : SequenceItem {
+    public class StackFlats : SequenceItem {
         private IImageSaveMediator imageSaveMediator;
         private IApplicationStatusMediator applicationStatusMediator;
         private IImageDataFactory imageDataFactory;
@@ -37,24 +37,24 @@ namespace NINA.Plugins.PixInsightTools.Instructions {
         private Task workerTask;
 
         [ImportingConstructor]
-        public StackFlatsAndStartLiveStacking(IImageSaveMediator imageSaveMediator, IApplicationStatusMediator applicationStatusMediator, IImageDataFactory imageDataFactory) {
+        public StackFlats(IImageSaveMediator imageSaveMediator, IApplicationStatusMediator applicationStatusMediator, IImageDataFactory imageDataFactory) {
             this.imageSaveMediator = imageSaveMediator;
             this.applicationStatusMediator = applicationStatusMediator;
             this.imageDataFactory = imageDataFactory;
         }
 
-        private StackFlatsAndStartLiveStacking(StackFlatsAndStartLiveStacking copyMe) : this(copyMe.imageSaveMediator, copyMe.applicationStatusMediator, copyMe.imageDataFactory) {
+        private StackFlats(StackFlats copyMe) : this(copyMe.imageSaveMediator, copyMe.applicationStatusMediator, copyMe.imageDataFactory) {
             CopyMetaData(copyMe);
         }
 
         public override object Clone() {
-            var clone = new StackFlatsAndStartLiveStacking(this) {
+            var clone = new StackFlats(this) {
             };
 
             return clone;
         }
 
-        public override void Initialize() {
+        public override void SequenceBlockInitialize() {
             imageSaveMediator.ImageSaved += ImageSaveMediator_ImageSaved;
             try {
                 cts?.Dispose();
@@ -64,7 +64,7 @@ namespace NINA.Plugins.PixInsightTools.Instructions {
             workerTask = StartCalibrationQueueWorker();
         }
 
-        public override void Teardown() {
+        public override void SequenceBlockTeardown() {
             imageSaveMediator.ImageSaved -= ImageSaveMediator_ImageSaved;
             try {
                 cts?.Cancel();
@@ -170,9 +170,6 @@ namespace NINA.Plugins.PixInsightTools.Instructions {
             if (WaitForProcessing) {
                 await task;
             }
-
-            Logger.Info("Starting up live stack");
-            _ = PixInsightToolsMediator.Instance.StartLiveStack();
         }
 
         private CalibrationFrame GetBiasMaster(ImageSavedEventArgs item) {
@@ -183,7 +180,7 @@ namespace NINA.Plugins.PixInsightTools.Instructions {
         }
 
         public override string ToString() {
-            return $"Category: {Category}, Item: {nameof(StackFlatsAndStartLiveStacking)}";
+            return $"Category: {Category}, Item: {nameof(StackFlats)}";
         }
     }
 }
