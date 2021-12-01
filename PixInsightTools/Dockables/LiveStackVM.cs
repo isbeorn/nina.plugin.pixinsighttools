@@ -25,6 +25,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using NINA.Core.Enum;
+using Accord.Imaging.Filters;
 
 namespace PixInsightTools.Dockables {
 
@@ -168,8 +170,8 @@ namespace PixInsightTools.Dockables {
 
         private async void ImageSaveMediator_ImageSaved(object sender, ImageSavedEventArgs e) {
             try {
-                if(e.MetaData.Image.ImageType == NINA.Equipment.Model.CaptureSequence.ImageTypes.LIGHT || e.MetaData.Image.ImageType == NINA.Equipment.Model.CaptureSequence.ImageTypes.SNAPSHOT) { 
-                    await queue.EnqueueAsync(new LiveStackItem(e.PathToImage.LocalPath, e.MetaData.Target.Name, e.Filter, e.MetaData.Image.ExposureTime, e.MetaData.Camera.Gain, e.MetaData.Camera.Offset, e.Image.PixelWidth, e.Image.PixelHeight));
+                if(e.MetaData.Image.ImageType == NINA.Equipment.Model.CaptureSequence.ImageTypes.LIGHT || e.MetaData.Image.ImageType == NINA.Equipment.Model.CaptureSequence.ImageTypes.SNAPSHOT) {                     
+                    await queue.EnqueueAsync(new LiveStackItem(e.PathToImage.LocalPath, e.MetaData.Target.Name, e.Filter, e.MetaData.Image.ExposureTime, e.MetaData.Camera.Gain, e.MetaData.Camera.Offset, e.Image.PixelWidth, e.Image.PixelHeight, e.IsBayered, e.MetaData.Camera.BayerPattern));
                 }
             } catch (Exception) {
             }
@@ -259,6 +261,7 @@ namespace PixInsightTools.Dockables {
                             var referenceFile = item.Path;
                             var calibratedFile = string.Empty;
                             var resampledFile = string.Empty;
+                            var debayeredFile = string.Empty;
                             var alignedFile = string.Empty;
                             if (flat != null || dark != null || bias != null) {
                                 var compress = false;
@@ -284,6 +287,16 @@ namespace PixInsightTools.Dockables {
                                 referenceFile = calibratedFile;
                                 calibrated = true;
                             }
+
+                            //if(item.IsBayered) {
+                            //  Debayer currently disabled - color combine needs to be aware of channels for osc
+                            //    string pattern = item.BayerPattern.ToString();
+                            //    if(item.BayerPattern == BayerPatternEnum.Auto) {
+                            //        pattern = BayerPatternEnum.RGGB.ToString();
+                            //    }
+                            //    debayeredFile = await new PixInsightDebayer(workingDir, slot).Run(referenceFile, item.BayerPattern.ToString(), progress, workerCTS.Token);
+                            //    referenceFile = debayeredFile;
+                            //}
 
                             if (PixInsightToolsMediator.Instance.ToolsPlugin.ResampleAmount > 1) {
                                 resampledFile = await new PixInsightResample(referenceFile, PixInsightToolsMediator.Instance.ToolsPlugin.ResampleAmount, workingDir, slot).Run(progress, workerCTS.Token);
@@ -313,6 +326,10 @@ namespace PixInsightTools.Dockables {
                                 FilterTabs.Add(tab);
                             }
 
+                            //if (item.IsBayered) {
+                            //    await TryDeleteFile(debayeredFile);
+                            //}
+                            
                             if (calibrated && !PixInsightToolsMediator.Instance.ToolsPlugin.KeepCalibratedFiles) {
                                 await TryDeleteFile(calibratedFile);
                             }
@@ -503,7 +520,7 @@ namespace PixInsightTools.Dockables {
 
     public class LiveStackItem {
 
-        public LiveStackItem(string path, string target, string filter, double exposureTime, int gain, int offset, int width, int height) {
+        public LiveStackItem(string path, string target, string filter, double exposureTime, int gain, int offset, int width, int height, bool isBayered, BayerPatternEnum bayerPattern) {
             Path = path;
             Filter = filter;
             ExposureTime = exposureTime;
@@ -512,6 +529,8 @@ namespace PixInsightTools.Dockables {
             Target = target;
             Width = width;
             Height = height;
+            IsBayered = isBayered;
+            BayerPattern = bayerPattern;
         }
 
         public string Path { get; }
@@ -522,6 +541,8 @@ namespace PixInsightTools.Dockables {
         public int Offset { get; }
         public int Width { get; }
         public int Height { get; }
+        public bool IsBayered { get; }
+        public BayerPatternEnum BayerPattern { get; }
     }
 
     public class TaskManager {

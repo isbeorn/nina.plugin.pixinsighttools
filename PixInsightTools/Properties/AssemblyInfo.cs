@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("PixInsight Tools")]
-[assembly: AssemblyDescription("A bundle of tools to interact with PixInsight from N.I.N.A.")]
+[assembly: AssemblyDescription("A bundle of tools to interact with PixInsight from N.I.N.A. for the purpose of live stacking")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Stefan Berg")]
 [assembly: AssemblyProduct("NINA.Plugins")]
@@ -49,7 +49,41 @@ using System.Runtime.InteropServices;
 //The featured logo that will be displayed in the plugin list next to the name
 [assembly: AssemblyMetadata("FeaturedImageURL", "")]
 //An example screenshot of your plugin in action
-[assembly: AssemblyMetadata("ScreenshotURL", "")]
+[assembly: AssemblyMetadata("ScreenshotURL", "https://bitbucket.org/Isbeorn/nina.plugin.pixinsighttools/downloads/LiveStackTab.png")]
 //An additional example screenshot of your plugin in action
 [assembly: AssemblyMetadata("AltScreenshotURL", "")]
-[assembly: AssemblyMetadata("LongDescription", @"")]
+[assembly: AssemblyMetadata("LongDescription", @"This plugin provides instructions and capabilities to interact with PixInsight and use the output to display a live stack insde N.I.N.A.
+
+## **Use this plugin only on an imaging rig that has enough processing power to interact with PixInsight in parallel to imaging!**
+
+## Prerequisites in Options
+
+* PixInsight needs to be installed
+* Set up your PixInsight location
+* Set a working directory - this folder will be used to store calibration files and temporary files during processing
+* Adjust the remaining settings to your needs
+* Add BIAS or DARK master files (optional)
+
+## Sequencer Instructions
+
+* Stack Flats
+    + Place this after a set of instructions that take FLAT frames
+    + While flats are being taken, the instruction will gather these frames and calibrate them in the background. Filter meta data will automatically be considered to separate these.
+    + Once the instruction is reached, it will take all flats that have been gathered up to that point and will stack them together
+    + After the stack has been created it will be automatically put into the session library of the live stack panel
+
+* Start Live Stack
+    + This instruction will start the live stack command in the imaging panel
+
+* Stop Live Stack
+    + This instruction will stop the live stack command in the imaging panel
+
+## Live Stacking Panel
+* Expander options
+    + Inside the expander you can manually add flat masters, or alternatively automatically let them be filled by the **Stack Flats** instruction
+    + Furthermore a color combination can be specified, once at least two image stacks are available
+
+* Start live stack
+    + Once the live stack is started, the plugin will listen for any light frame that is being captured. 
+    + Any frame that is gathered will be calibrated and put into a stack. Filters and Target Names are considered automatically. So you can create stacks for multiple filters and also multiple targets.
+    + Inside a stack window you can also see the number of already stacked frames as well as specifying to apply an ABE to the image")]

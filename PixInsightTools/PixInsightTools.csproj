@@ -262,6 +262,7 @@
       <DependentUpon>DockableDataTemplates.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dockables\IsMonoTabToVisibilityConverter.cs" />
+    <Compile Include="Dockables\PixInsightDebayer.cs" />
     <Compile Include="Dockables\PixInsightFlatIntegration.cs" />
     <Compile Include="Dockables\PixInsightPostProcessing.cs" />
     <Compile Include="Dockables\PixInsightAlign.cs" />
@@ -299,6 +300,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Scripts\debayer.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\colorcombine_stack.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -403,7 +407,8 @@ copy "$(TargetDir)Scripts\pixelmath_stack.js" "%25localappdata%25\NINA\Plugins\P
 copy "$(TargetDir)Scripts\resample.js" "%25localappdata%25\NINA\Plugins\PixInsight Tools\Scripts\resample.js" /Y
 copy "$(TargetDir)Scripts\postprocess_stack.js" "%25localappdata%25\NINA\Plugins\PixInsight Tools\Scripts\postprocess_stack.js" /Y
 copy "$(TargetDir)Scripts\colorcombine_stack.js" "%25localappdata%25\NINA\Plugins\PixInsight Tools\Scripts\colorcombine_stack.js" /Y
-copy "$(TargetDir)Scripts\flat_integration.js" "%25localappdata%25\NINA\Plugins\PixInsight Tools\Scripts\flat_integration.js" /Y</PostBuildEvent>
+copy "$(TargetDir)Scripts\flat_integration.js" "%25localappdata%25\NINA\Plugins\PixInsight Tools\Scripts\flat_integration.js" /Y
+copy "$(TargetDir)Scripts\debayer.js" "%25localappdata%25\NINA\Plugins\PixInsight Tools\Scripts\debayer.js" /Y</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Google.Protobuf.Tools.3.18.1\build\Google.Protobuf.Tools.targets" Condition="Exists('..\packages\Google.Protobuf.Tools.3.18.1\build\Google.Protobuf.Tools.targets')" />
   <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
