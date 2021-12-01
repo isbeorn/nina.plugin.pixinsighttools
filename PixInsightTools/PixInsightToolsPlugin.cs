@@ -62,6 +62,10 @@ namespace PixInsightTools {
     public class PixInsightToolsPlugin : PluginBase, INotifyPropertyChanged {
         [ImportingConstructor]
         public PixInsightToolsPlugin(IProfileService profileService, IWindowServiceFactory windowServiceFactory, IImageDataFactory imageDataFactory) {
+            if(DllLoader.IsX86()) {
+                throw new Exception("This plugin is not available for x86 version of N.I.N.A.");
+            }
+
             if (Properties.Settings.Default.UpdateSettings) {
                 Properties.Settings.Default.Upgrade();
                 Properties.Settings.Default.UpdateSettings = false;
