@@ -33,7 +33,7 @@ namespace NINA.Plugins.PixInsightTools.Instructions {
         private bool waitForProcessing;
         private Dictionary<string, List<string>> FlatsToIntegrate = new Dictionary<string, List<string>>();
         private string workingDir { get => Properties.Settings.Default.WorkingDirectory; }
-        private IList<CalibrationFrame> BiasLibrary { get => PixInsightToolsPlugin.FromStringCollectionToList<CalibrationFrame>(Properties.Settings.Default.BiasLibrary); }
+        private IList<CalibrationFrame> BiasLibrary { get => PixInsightToolsMediator.Instance.ToolsPlugin.BiasLibrary; }
         private Task workerTask;
 
         [ImportingConstructor]

@@ -9,6 +9,7 @@ using NINA.Image.FileFormat.XISF;
 using NINA.Image.ImageData;
 using NINA.Image.Interfaces;
 using NINA.Plugins.PixInsightTools.Model;
+using NINA.Profile;
 using NINA.Profile.Interfaces;
 using NINA.WPF.Base.Interfaces.Mediator;
 using NINA.WPF.Base.ViewModel;
@@ -18,6 +19,8 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -36,7 +39,7 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
         private IImageDataFactory imageDataFactory;
         private int slot;
 
-        private string workingDir { get => Properties.Settings.Default.WorkingDirectory; }
+        private string workingDir { get => PixInsightToolsMediator.Instance.ToolsPlugin.WorkingDirectory; }
 
         [ImportingConstructor]
         public LiveStackVM(IProfileService profileService, IImageSaveMediator imageSaveMediator, IApplicationStatusMediator applicationStatusMediator, IWindowServiceFactory windowServiceFactory, IImageDataFactory imageDataFactory) : base(profileService) {
@@ -254,15 +257,15 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
                             var alignedFile = string.Empty;
                             if (flat != null || dark != null || bias != null) {
                                 var compress = false;
-                                if (Properties.Settings.Default.KeepCalibratedFiles && Properties.Settings.Default.CompressCalibratedFiles) {
+                                if (PixInsightToolsMediator.Instance.ToolsPlugin.KeepCalibratedFiles && PixInsightToolsMediator.Instance.ToolsPlugin.CompressCalibratedFiles) {
                                     compress = true;
                                 }
 
-                                var pedestal = Properties.Settings.Default.Pedestal;
-                                var saveAs16Bit = Properties.Settings.Default.SaveAs16Bit;
+                                var pedestal = PixInsightToolsMediator.Instance.ToolsPlugin.Pedestal;
+                                var saveAs16Bit = PixInsightToolsMediator.Instance.ToolsPlugin.SaveAs16Bit;
                                 calibratedFile = await new PixInsightCalibration(workingDir, slot, compress, pedestal, saveAs16Bit, flat?.Path ?? "", dark?.Path ?? "", bias?.Path ?? "").Run(item.Path, progress, workerCTS.Token);
 
-                                if (Properties.Settings.Default.KeepCalibratedFiles) {
+                                if (PixInsightToolsMediator.Instance.ToolsPlugin.KeepCalibratedFiles) {
                                     var destinationFolder = Path.Combine(workingDir, "calibrated", target, filter);
                                     if (!Directory.Exists(destinationFolder)) {
                                         Directory.CreateDirectory(destinationFolder);
@@ -277,8 +280,8 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
                                 calibrated = true;
                             }
 
-                            if (Properties.Settings.Default.ResampleAmount > 1) {
-                                resampledFile = await new PixInsightResample(referenceFile, Properties.Settings.Default.ResampleAmount, workingDir, slot).Run(progress, workerCTS.Token);
+                            if (PixInsightToolsMediator.Instance.ToolsPlugin.ResampleAmount > 1) {
+                                resampledFile = await new PixInsightResample(referenceFile, PixInsightToolsMediator.Instance.ToolsPlugin.ResampleAmount, workingDir, slot).Run(progress, workerCTS.Token);
                                 referenceFile = resampledFile;
                             }
 
@@ -305,11 +308,11 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
                                 FilterTabs.Add(tab);
                             }
 
-                            if (calibrated && !Properties.Settings.Default.KeepCalibratedFiles) {
+                            if (calibrated && !PixInsightToolsMediator.Instance.ToolsPlugin.KeepCalibratedFiles) {
                                 await TryDeleteFile(calibratedFile);
                             }
 
-                            if (Properties.Settings.Default.ResampleAmount > 1) {
+                            if (PixInsightToolsMediator.Instance.ToolsPlugin.ResampleAmount > 1) {
                                 await TryDeleteFile(resampledFile);
                             }
 
@@ -408,8 +411,8 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
         }
 
         public IList<CalibrationFrame> FlatLibrary { get; } = new AsyncObservableCollection<CalibrationFrame>();
-        public IList<CalibrationFrame> DarkLibrary { get => PixInsightToolsPlugin.FromStringCollectionToList<CalibrationFrame>(Properties.Settings.Default.DarkLibrary); }
-        public IList<CalibrationFrame> BiasLibrary { get => PixInsightToolsPlugin.FromStringCollectionToList<CalibrationFrame>(Properties.Settings.Default.BiasLibrary); }
+        public IList<CalibrationFrame> DarkLibrary { get => PixInsightToolsMediator.Instance.ToolsPlugin.DarkLibrary; }
+        public IList<CalibrationFrame> BiasLibrary { get => PixInsightToolsMediator.Instance.ToolsPlugin.BiasLibrary; }
     }
 
     public class ColorTab : FilterTab {

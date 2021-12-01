@@ -37,28 +37,6 @@ namespace NINA.Plugins.PixInsightTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection DarkLibrary {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["DarkLibrary"]));
-            }
-            set {
-                this["DarkLibrary"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection BiasLibrary {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["BiasLibrary"]));
-            }
-            set {
-                this["BiasLibrary"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string WorkingDirectory {
             get {
@@ -78,66 +56,6 @@ namespace NINA.Plugins.PixInsightTools.Properties {
             }
             set {
                 this["PixInsightLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool KeepCalibratedFiles {
-            get {
-                return ((bool)(this["KeepCalibratedFiles"]));
-            }
-            set {
-                this["KeepCalibratedFiles"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool CompressCalibratedFiles {
-            get {
-                return ((bool)(this["CompressCalibratedFiles"]));
-            }
-            set {
-                this["CompressCalibratedFiles"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2")]
-        public int ResampleAmount {
-            get {
-                return ((int)(this["ResampleAmount"]));
-            }
-            set {
-                this["ResampleAmount"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int Pedestal {
-            get {
-                return ((int)(this["Pedestal"]));
-            }
-            set {
-                this["Pedestal"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool SaveAs16Bit {
-            get {
-                return ((bool)(this["SaveAs16Bit"]));
-            }
-            set {
-                this["SaveAs16Bit"] = value;
             }
         }
     }

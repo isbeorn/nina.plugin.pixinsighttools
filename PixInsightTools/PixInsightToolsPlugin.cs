@@ -22,6 +22,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using NINA.Plugins.PixInsightTools.Dockables;
 using NINA.Image.Interfaces;
+using NINA.Profile.Interfaces;
+using NINA.Profile;
 
 namespace NINA.Plugins.PixInsightTools {
     public class PixInsightToolsMediator {
@@ -31,8 +33,13 @@ namespace NINA.Plugins.PixInsightTools {
         private static readonly Lazy<PixInsightToolsMediator> lazy = new Lazy<PixInsightToolsMediator>(() => new PixInsightToolsMediator());
 
         public static PixInsightToolsMediator Instance { get => lazy.Value; }
+        public void RegisterPlugin(PixInsightToolsPlugin toolsPlugin) {
+            this.ToolsPlugin = toolsPlugin;
+        }
 
         private LiveStackVM stackVM;
+        public PixInsightToolsPlugin ToolsPlugin { get; private set; }
+
         public void RegisterLiveStackVM(LiveStackVM liveStackVM) {
             stackVM = liveStackVM;
         }
@@ -54,14 +61,17 @@ namespace NINA.Plugins.PixInsightTools {
     [Export(typeof(IPluginManifest))]
     public class PixInsightToolsPlugin : PluginBase, INotifyPropertyChanged {
         [ImportingConstructor]
-        public PixInsightToolsPlugin(IWindowServiceFactory windowServiceFactory, IImageDataFactory imageDataFactory) {
+        public PixInsightToolsPlugin(IProfileService profileService, IWindowServiceFactory windowServiceFactory, IImageDataFactory imageDataFactory) {
             if (Properties.Settings.Default.UpdateSettings) {
                 Properties.Settings.Default.Upgrade();
                 Properties.Settings.Default.UpdateSettings = false;
                 CoreUtil.SaveSettings( Properties.Settings.Default);
             }
+            PixInsightToolsMediator.Instance.RegisterPlugin(this);
             this.windowServiceFactory = windowServiceFactory;
             this.imageDataFactory = imageDataFactory;
+            this.profileService = profileService;
+            this.pluginSettings = new PluginOptionsAccessor(profileService, Guid.Parse(this.Identifier));
 
             if (string.IsNullOrWhiteSpace(Properties.Settings.Default.PixInsightLocation)) { 
                 if (Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "PixInsight", "bin"))) {
@@ -69,18 +79,9 @@ namespace NINA.Plugins.PixInsightTools {
                     CoreUtil.SaveSettings( Properties.Settings.Default);
                 }
             }
-
-            if (Properties.Settings.Default.DarkLibrary == null) {
-                Properties.Settings.Default.DarkLibrary = new StringCollection();
-                CoreUtil.SaveSettings( Properties.Settings.Default);
-            }
-            DarkLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringCollectionToList<CalibrationFrame>(Properties.Settings.Default.DarkLibrary));
-
-            if(Properties.Settings.Default.BiasLibrary == null) {
-                Properties.Settings.Default.BiasLibrary = new StringCollection();
-                CoreUtil.SaveSettings( Properties.Settings.Default);
-            }
-            BiasLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringCollectionToList<CalibrationFrame>(Properties.Settings.Default.BiasLibrary));
+                        
+            DarkLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringCollectionToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(DarkLibrary), "")));                        
+            BiasLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringCollectionToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(BiasLibrary), "")));
 
             if (!Directory.Exists(Properties.Settings.Default.WorkingDirectory)) {
                 Properties.Settings.Default.WorkingDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "N.I.N.A", "LiveStack");
@@ -96,16 +97,14 @@ namespace NINA.Plugins.PixInsightTools {
         private void DeleteBiasMaster(object obj) {
             if(obj is CalibrationFrame c) {
                 BiasLibrary.Remove(c);
-                Properties.Settings.Default.BiasLibrary = FromListToStringCollection(BiasLibrary);
-                CoreUtil.SaveSettings( Properties.Settings.Default);
+                pluginSettings.SetValueString(nameof(BiasLibrary), FromListToStringCollection(BiasLibrary));
             }
         }
 
         private void DeleteDarkMaster(object obj) {
             if (obj is CalibrationFrame c) {
                 DarkLibrary.Remove(c);
-                Properties.Settings.Default.DarkLibrary = FromListToStringCollection(DarkLibrary);
-                CoreUtil.SaveSettings( Properties.Settings.Default);
+                pluginSettings.SetValueString(nameof(DarkLibrary), FromListToStringCollection(DarkLibrary));
             }
         }
 
@@ -195,12 +194,10 @@ namespace NINA.Plugins.PixInsightTools {
                 if(prompt.Continue) { 
                     if(frame.Type == CalibrationFrameType.BIAS) {
                         BiasLibrary.Add(frame);
-                        Properties.Settings.Default.BiasLibrary = FromListToStringCollection(BiasLibrary);
-                        CoreUtil.SaveSettings( Properties.Settings.Default);
+                        pluginSettings.SetValueString(nameof(BiasLibrary), FromListToStringCollection(BiasLibrary));
                     } else if(frame.Type == CalibrationFrameType.DARK) {
                         DarkLibrary.Add(frame);
-                        Properties.Settings.Default.DarkLibrary = FromListToStringCollection(DarkLibrary);
-                        CoreUtil.SaveSettings( Properties.Settings.Default);
+                        pluginSettings.SetValueString(nameof(DarkLibrary), FromListToStringCollection(DarkLibrary));
                     }
                 }
             }
@@ -208,49 +205,41 @@ namespace NINA.Plugins.PixInsightTools {
         }
 
         public bool KeepCalibratedFiles {
-            get => Properties.Settings.Default.KeepCalibratedFiles;
+            get => pluginSettings.GetValueBoolean(nameof(KeepCalibratedFiles), false);
             set {
-                Properties.Settings.Default.KeepCalibratedFiles = value;
-                if(!value) {
-                    CompressCalibratedFiles = false;
-                }
-                CoreUtil.SaveSettings( Properties.Settings.Default);
+                pluginSettings.SetValueBoolean(nameof(KeepCalibratedFiles), value);
                 RaisePropertyChanged();
             }
         }
 
         public bool CompressCalibratedFiles {
-            get => Properties.Settings.Default.CompressCalibratedFiles;
+            get => pluginSettings.GetValueBoolean(nameof(CompressCalibratedFiles), false);
             set {
-                Properties.Settings.Default.CompressCalibratedFiles = value;
-                CoreUtil.SaveSettings( Properties.Settings.Default);
+                pluginSettings.SetValueBoolean(nameof(CompressCalibratedFiles), value);
                 RaisePropertyChanged();
             }
         }
 
         public bool SaveAs16Bit {
-            get => Properties.Settings.Default.SaveAs16Bit;
+            get => pluginSettings.GetValueBoolean(nameof(SaveAs16Bit), false);
             set {
-                Properties.Settings.Default.SaveAs16Bit = value;
-                CoreUtil.SaveSettings( Properties.Settings.Default);
+                pluginSettings.SetValueBoolean(nameof(SaveAs16Bit), value);
                 RaisePropertyChanged();
             }
         }
         
         public int ResampleAmount {
-            get => Properties.Settings.Default.ResampleAmount;
+            get => pluginSettings.GetValueInt32(nameof(ResampleAmount), 2);
             set {
-                Properties.Settings.Default.ResampleAmount = value;
-                CoreUtil.SaveSettings( Properties.Settings.Default);
+                pluginSettings.SetValueInt32(nameof(ResampleAmount), value);
                 RaisePropertyChanged();
             }
         }
 
         public int Pedestal {
-            get => Properties.Settings.Default.Pedestal;
+            get => pluginSettings.GetValueInt32(nameof(Pedestal), 0);
             set {
-                Properties.Settings.Default.Pedestal = value;
-                CoreUtil.SaveSettings( Properties.Settings.Default);
+                pluginSettings.SetValueInt32(nameof(Pedestal), value);
                 RaisePropertyChanged();
             }
         }
@@ -277,22 +266,22 @@ namespace NINA.Plugins.PixInsightTools {
             }
         }
 
-        public static IList<T> FromStringCollectionToList<T>(StringCollection collection) {
+        public static IList<T> FromStringCollectionToList<T>(string collection) {
             var l = new List<T>();
-            foreach(var value in collection) {
+            foreach(var value in collection.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
                 var item = JsonConvert.DeserializeObject<T>(value);
                 l.Add(item);
             }
             return l;
         }
 
-        public static StringCollection FromListToStringCollection<T>(IList<T> l) {
-            var collection = new StringCollection();
+        public static string FromListToStringCollection<T>(IList<T> l) {
+            var collection = new List<string>();
             foreach (var value in l) {
                 var item = JsonConvert.SerializeObject(value);
                 collection.Add(item);
             }
-            return collection;
+            return string.Join(";", collection);
         }
 
         public IAsyncCommand AddCalibrationFrameCommand { get; }
@@ -313,6 +302,8 @@ namespace NINA.Plugins.PixInsightTools {
         private AsyncObservableCollection<CalibrationFrame> biasLibrary;
         private IWindowServiceFactory windowServiceFactory;
         private IImageDataFactory imageDataFactory;
+        private IProfileService profileService;
+        private IPluginOptionsAccessor pluginSettings;
 
         public AsyncObservableCollection<CalibrationFrame> BiasLibrary {
             get => biasLibrary;
