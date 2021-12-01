@@ -16,9 +16,9 @@ namespace PixInsightTools.Dockables {
             this.stack = stack;
         }
 
-        public async Task<int> Run(IProgress<ApplicationStatus> progress, CancellationToken ct) {
+        public async Task<int> Run(bool isOSC, IProgress<ApplicationStatus> progress, CancellationToken ct) {
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = "Stacking" });
-            var result = await RunPixInsightScript($" --execute={pixInsightSlot}:\"{stackScript},'{guid}',{input},{stack},{workingDir}\"  --automation-mode", progress, ct);
+            var result = await RunPixInsightScript($" --execute={pixInsightSlot}:\"{stackScript},'{guid}',{input},{stack},{workingDir},{isOSC}\"  --automation-mode", progress, ct);
 
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = string.Empty });
 

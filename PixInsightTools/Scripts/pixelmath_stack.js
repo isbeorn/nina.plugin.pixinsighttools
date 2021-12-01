@@ -4,11 +4,13 @@ function stack() {
     let newFile = jsArguments[1];
     let stackFile = jsArguments[2];
     let outputDir = jsArguments[3];
+    let isOSC = jsArguments[4];
 
     console.writeln("guid = " + guid);
     console.writeln("newFile = " + newFile);
     console.writeln("stackFile = " + stackFile);
     console.writeln("outputDir = " + outputDir);
+    console.writeln("isOSC = " + isOSC);
 
     let newInfo = new FileInfo(newFile);
     let stackInfo = new FileInfo(stackFile);
@@ -53,8 +55,8 @@ function stack() {
 
         let P = new PixelMath;
         P.expression = "iif(" + newId + ">(" + stackId + "*2), " + stackId + ", iif(" + newId + "==0, " + stackId + ", ((" + stackId + "*" + (totalFiles - 1) + ")+" + newId + ")/" + totalFiles + "))";
-        P.expression1 = "";
-        P.expression2 = "";
+        P.expression1 = isOSC ? "iif(" + newId + ">(" + stackId + "*2), " + stackId + ", iif(" + newId + "==0, " + stackId + ", ((" + stackId + "*" + (totalFiles - 1) + ")+" + newId + ")/" + totalFiles + "))" : "";
+        P.expression2 = isOSC ? "iif(" + newId + ">(" + stackId + "*2), " + stackId + ", iif(" + newId + "==0, " + stackId + ", ((" + stackId + "*" + (totalFiles - 1) + ")+" + newId + ")/" + totalFiles + "))" : "";
         P.expression3 = "";
         P.useSingleExpression = false;
         P.symbols = "";

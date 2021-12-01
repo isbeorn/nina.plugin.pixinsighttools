@@ -288,15 +288,14 @@ namespace PixInsightTools.Dockables {
                                 calibrated = true;
                             }
 
-                            //if(item.IsBayered) {
-                            //  Debayer currently disabled - color combine needs to be aware of channels for osc
-                            //    string pattern = item.BayerPattern.ToString();
-                            //    if(item.BayerPattern == BayerPatternEnum.Auto) {
-                            //        pattern = BayerPatternEnum.RGGB.ToString();
-                            //    }
-                            //    debayeredFile = await new PixInsightDebayer(workingDir, slot).Run(referenceFile, item.BayerPattern.ToString(), progress, workerCTS.Token);
-                            //    referenceFile = debayeredFile;
-                            //}
+                            if (item.IsBayered) {  
+                                  string pattern = item.BayerPattern.ToString();
+                                  if (item.BayerPattern == BayerPatternEnum.Auto) {
+                                        pattern = BayerPatternEnum.RGGB.ToString();
+                                    }
+                                debayeredFile = await new PixInsightDebayer(workingDir, slot).Run(referenceFile, item.BayerPattern.ToString(), progress, workerCTS.Token);
+                                referenceFile = debayeredFile;
+                            }
 
                             if (PixInsightToolsMediator.Instance.ToolsPlugin.ResampleAmount > 1) {
                                 resampledFile = await new PixInsightResample(referenceFile, PixInsightToolsMediator.Instance.ToolsPlugin.ResampleAmount, workingDir, slot).Run(progress, workerCTS.Token);
@@ -309,7 +308,7 @@ namespace PixInsightTools.Dockables {
                                 stackPath = tab.Path;
                                 alignedFile = await new PixInsightAlign(referenceFile, stackPath, workingDir, slot).Run(progress, workerCTS.Token);
 
-                                count = await new PixInsightStack(alignedFile, stackPath, workingDir, slot).Run(progress, workerCTS.Token);
+                                count = await new PixInsightStack(alignedFile, stackPath, workingDir, slot).Run(item.IsBayered, progress, workerCTS.Token);
                             } else {
                                 stackPath = Path.Combine(workingDir, GetStackName(target, filter));
 
@@ -326,10 +325,10 @@ namespace PixInsightTools.Dockables {
                                 FilterTabs.Add(tab);
                             }
 
-                            //if (item.IsBayered) {
-                            //    await TryDeleteFile(debayeredFile);
-                            //}
-                            
+                            if (item.IsBayered) {
+                                await TryDeleteFile(debayeredFile);
+                            }
+
                             if (calibrated && !PixInsightToolsMediator.Instance.ToolsPlugin.KeepCalibratedFiles) {
                                 await TryDeleteFile(calibratedFile);
                             }
