@@ -211,6 +211,14 @@ namespace PixInsightTools {
             }
         }
 
+        public bool UseBiasForLights {
+            get => pluginSettings.GetValueBoolean(nameof(UseBiasForLights), false);
+            set {
+                pluginSettings.SetValueBoolean(nameof(UseBiasForLights), value);
+                RaisePropertyChanged();
+            }
+        }
+
         public bool CompressCalibratedFiles {
             get => pluginSettings.GetValueBoolean(nameof(CompressCalibratedFiles), false);
             set {

@@ -410,7 +410,7 @@ namespace PixInsightTools.Dockables {
         }
 
         private CalibrationFrame GetBiasMaster(LiveStackItem item) {
-            if (BiasLibrary?.Count > 0) {
+            if (PixInsightToolsMediator.Instance.ToolsPlugin.UseBiasForLights && BiasLibrary?.Count > 0) {
                 return BiasLibrary.FirstOrDefault(x => x.Gain == item.Gain && x.Offset == item.Offset && x.Width == item.Width && x.Height == item.Height);
             }
             return null;

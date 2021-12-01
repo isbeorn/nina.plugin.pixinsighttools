@@ -30,7 +30,6 @@ namespace PixInsightTools.Instructions {
         private IImageDataFactory imageDataFactory;
         private CancellationTokenSource cts;
         private AsyncProducerConsumerQueue<ImageSavedEventArgs> queue = new AsyncProducerConsumerQueue<ImageSavedEventArgs>(1000);
-        private bool waitForProcessing;
         private Dictionary<string, List<string>> FlatsToIntegrate = new Dictionary<string, List<string>>();
         private string workingDir { get => Properties.Settings.Default.WorkingDirectory; }
         private IList<CalibrationFrame> BiasLibrary { get => PixInsightToolsMediator.Instance.ToolsPlugin.BiasLibrary; }
@@ -118,17 +117,8 @@ namespace PixInsightTools.Instructions {
             } catch (OperationCanceledException) { }
         }
 
-        [JsonProperty]
-        public bool WaitForProcessing {
-            get => waitForProcessing;
-            set {
-                waitForProcessing = value;
-                RaisePropertyChanged();
-            }
-        }
-
         public override async Task Execute(IProgress<ApplicationStatus> progress, CancellationToken token) {
-            var task = Task.Run(async () => {
+            await Task.Run(async () => {
                 if (FlatsToIntegrate.Keys.Count == 0) {
                     Logger.Info("No flat frames to stack");
                 } else {
@@ -166,10 +156,6 @@ namespace PixInsightTools.Instructions {
                     }
                 }
             });
-
-            if (WaitForProcessing) {
-                await task;
-            }
         }
 
         private CalibrationFrame GetBiasMaster(ImageSavedEventArgs item) {

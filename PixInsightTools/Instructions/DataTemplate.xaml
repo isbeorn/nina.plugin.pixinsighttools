@@ -11,12 +11,6 @@
             <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
         </DataTemplate.Resources>
         <nina:SequenceBlockView DataContext="{Binding}">
-            <nina:SequenceBlockView.SequenceItemContent>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock VerticalAlignment="Center">Wait for processing to finish?</TextBlock>
-                    <CheckBox IsChecked="{Binding WaitForProcessing, Mode=TwoWay}" />
-                </StackPanel>
-            </nina:SequenceBlockView.SequenceItemContent>
             <nina:SequenceBlockView.SequenceItemProgressContent>
                 <StackPanel Orientation="Vertical" />
             </nina:SequenceBlockView.SequenceItemProgressContent>
