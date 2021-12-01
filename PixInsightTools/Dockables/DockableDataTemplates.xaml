@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behavior="clr-namespace:NINA.WPF.Base.Behaviors;assembly=NINA.WPF.Base"
     xmlns:converter="clr-namespace:NINA.Core.Utility.Converters;assembly=NINA.Core"
+    xmlns:converters="clr-namespace:NINA.Core.Utility.Converters;assembly=NINA.Core"
     xmlns:filter="clr-namespace:NINA.Core.Model;assembly=NINA.Core"
     xmlns:local="clr-namespace:PixInsightTools.Dockables"
     xmlns:mini="clr-namespace:NINA.View.Sequencer.MiniSequencer;assembly=NINA.Sequencer"
@@ -15,6 +16,9 @@
     xmlns:util="clr-namespace:NINA.Core.Utility;assembly=NINA.Core"
     xmlns:wpfbase="clr-namespace:NINA.WPF.Base.View;assembly=NINA.WPF.Base">
 
+    <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+    <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
+    <local:IsMonoTabToVisibilityConverter x:Key="IsMonoTabToVisibilityConverter" />
     <DataTemplate x:Key="PixInsightTools.Dockables.LiveStackVM_Dockable">
         <Grid x:Name="PART_TheGrid" Margin="5">
             <Grid.RowDefinitions>
@@ -138,8 +142,8 @@
                                         Margin="5,0,0,0"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Top"
-                                        Background="{StaticResource SecondaryBackgroundBrush}"
-                                        Orientation="Vertical">
+                                        Orientation="Vertical"
+                                        Visibility="{Binding ., Converter={StaticResource IsMonoTabToVisibilityConverter}}">
                                         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                                             <TextBlock Text="Images in stack: " />
                                             <TextBlock Text="{Binding Count}" />
@@ -161,27 +165,75 @@
                                     </StackPanel>
                                 </wpfbase:ImageView.ButtonHeaderContent>
                             </wpfbase:ImageView>
-
-                            <Button
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Bottom"
-                                Command="{Binding DataContext.RemoveTabCommand, ElementName=PART_TheGrid}"
-                                CommandParameter="{Binding}">
-                                <TextBlock Padding="5,0,5,0" Text="Remove Stack" />
-                            </Button>
                         </Grid>
                     </DataTemplate>
                 </TabControl.ContentTemplate>
-                <TabControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Target}" />
-                            <TextBlock Text=" - " />
-                            <TextBlock Text="{Binding Filter}" />
-                        </StackPanel>
+                <TabControl.ItemContainerStyle>
+                    <Style TargetType="TabItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="TabItem">
+                                    <Border
+                                        Name="PART_Border"
+                                        Margin="-1,2,0,0"
+                                        BorderBrush="{StaticResource BorderBrush}"
+                                        BorderThickness="1,0,1,0">
+                                        <StackPanel
+                                            Name="PART_Panel"
+                                            Height="25"
+                                            Orientation="Horizontal">
+                                            <TextBlock
+                                                Margin="5,0,0,0"
+                                                VerticalAlignment="Center"
+                                                Text="{Binding Target}" />
+                                            <TextBlock VerticalAlignment="Center" Text=" - " />
+                                            <TextBlock
+                                                Margin="0,0,2,0"
+                                                VerticalAlignment="Center"
+                                                Text="{Binding Filter}" />
 
-                    </DataTemplate>
-                </TabControl.ItemTemplate>
+                                            <ninactrl:LoadingControl
+                                                x:Name="PART_Processing"
+                                                Width="20"
+                                                Height="20"
+                                                Margin="2.5"
+                                                Visibility="{Binding Locked, Converter={StaticResource VisibilityConverter}}" />
+                                            <Button
+                                                x:Name="PART_Close"
+                                                Width="25"
+                                                Height="25"
+                                                Margin="2,0,0,0"
+                                                HorizontalAlignment="Right"
+                                                Command="{Binding DataContext.RemoveTabCommand, ElementName=PART_TheGrid}"
+                                                CommandParameter="{Binding}">
+                                                <Path
+                                                    Margin="5"
+                                                    Data="{StaticResource TrashCanSVG}"
+                                                    Fill="{StaticResource ButtonForegroundBrush}"
+                                                    Stretch="Uniform" />
+                                            </Button>
+                                        </StackPanel>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="False">
+                                            <Setter TargetName="PART_Close" Property="Visibility" Value="Hidden" />
+                                        </Trigger>
+
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="PART_Panel" Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter TargetName="PART_Panel" Property="Background" Value="{StaticResource BackgroundBrush}" />
+                                        </Trigger>
+                                        <Trigger SourceName="PART_Panel" Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="PART_Panel" Property="Background" Value="{StaticResource ButtonBackgroundSelectedBrush}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TabControl.ItemContainerStyle>
 
             </TabControl>
 
