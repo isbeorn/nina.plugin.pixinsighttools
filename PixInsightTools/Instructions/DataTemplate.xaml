@@ -12,14 +12,22 @@
         </DataTemplate.Resources>
         <nina:SequenceBlockView DataContext="{Binding}">
             <nina:SequenceBlockView.SequenceItemProgressContent>
-                <StackPanel Orientation="Vertical" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Flats In Queue" />
+                    <TextBlock Text=": " />
+                    <TextBlock Text="{Binding QueueEntries}" />
+                </StackPanel>
             </nina:SequenceBlockView.SequenceItemProgressContent>
         </nina:SequenceBlockView>
     </DataTemplate>
     <DataTemplate x:Key="PixInsightTools.Instructions.StackFlats_Mini">
         <mini:MiniSequenceItem>
             <mini:MiniSequenceItem.SequenceItemProgressContent>
-                <StackPanel Orientation="Vertical" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Flats In Queue" />
+                    <TextBlock Text=": " />
+                    <TextBlock Text="{Binding QueueEntries}" />
+                </StackPanel>
             </mini:MiniSequenceItem.SequenceItemProgressContent>
         </mini:MiniSequenceItem>
     </DataTemplate>

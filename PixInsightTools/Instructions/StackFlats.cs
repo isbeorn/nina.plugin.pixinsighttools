@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace PixInsightTools.Instructions {
 
     [ExportMetadata("Name", "Stack flats")]
-    [ExportMetadata("Description", "This instruction will calibrate and stack flat frames that are taken inside the current instruction set (and child instruction sets) and register the stacked flats for the live stack. Place it after your flats.")]
+    [ExportMetadata("Description", "This instruction will calibrate and stack flat frames that are taken inside the current instruction set (and child instruction sets) and register the stacked flats master for the live stack. Place it after your flats.")]
     [ExportMetadata("Icon", "")]
     [ExportMetadata("Category", "PixInsight Tools")]
     [Export(typeof(ISequenceItem))]
@@ -34,6 +34,7 @@ namespace PixInsightTools.Instructions {
         private string workingDir { get => Properties.Settings.Default.WorkingDirectory; }
         private IList<CalibrationFrame> BiasLibrary { get => PixInsightToolsMediator.Instance.ToolsPlugin.BiasLibrary; }
         private Task workerTask;
+        private int queueEntries;
 
         [ImportingConstructor]
         public StackFlats(IImageSaveMediator imageSaveMediator, IApplicationStatusMediator applicationStatusMediator, IImageDataFactory imageDataFactory) {
@@ -51,6 +52,14 @@ namespace PixInsightTools.Instructions {
             };
 
             return clone;
+        }
+
+        public int QueueEntries { 
+            get => queueEntries; 
+            set {
+                queueEntries = value;
+                RaisePropertyChanged();
+            } 
         }
 
         public override void SequenceBlockInitialize() {
@@ -74,6 +83,8 @@ namespace PixInsightTools.Instructions {
             if (e.MetaData.Image.ImageType == NINA.Equipment.Model.CaptureSequence.ImageTypes.FLAT) {
                 try {
                     queue.Enqueue(e);
+                    Interlocked.Increment(ref queueEntries);
+                    RaisePropertyChanged(nameof(QueueEntries));
                 } catch (Exception) {
                 }
             }
@@ -113,6 +124,8 @@ namespace PixInsightTools.Instructions {
                         FlatsToIntegrate[filter] = new List<string>();
                     }
                     FlatsToIntegrate[filter].Add(destinationFile);
+                    Interlocked.Decrement(ref queueEntries);
+                    RaisePropertyChanged(nameof(QueueEntries));
                 }
             } catch (OperationCanceledException) { }
         }
@@ -128,11 +141,13 @@ namespace PixInsightTools.Instructions {
                     imageSaveMediator.ImageSaved -= ImageSaveMediator_ImageSaved;
 
                     Logger.Info("Finishing up remaining flat calibration");
+                    progress?.Report(new ApplicationStatus() { Status = $"Waiting for flat calibration to finish" });
                     await workerTask;
 
                     foreach (var filter in FlatsToIntegrate.Keys) {
                         try {
                             Logger.Info($"Generating flat master for filter {filter}");
+                            progress?.Report(new ApplicationStatus() { Status = $"Generating flat master for filter {filter}" });
                             var flatsForIntegration = string.Join("|", FlatsToIntegrate[filter]);
 
                             var slot = 153;
