@@ -28,7 +28,7 @@
                 <Expander
                     VerticalAlignment="Center"
                     Header="Flat Master Session Library"
-                    IsExpanded="True">
+                    IsExpanded="{Binding IsExpanded}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition />

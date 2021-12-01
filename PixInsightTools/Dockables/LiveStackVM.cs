@@ -37,6 +37,7 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
         private IApplicationStatusMediator applicationStatusMediator;
         private IWindowServiceFactory windowServiceFactory;
         private IImageDataFactory imageDataFactory;
+        private TaskManager workManager;
         private int slot;
 
         private string workingDir { get => PixInsightToolsMediator.Instance.ToolsPlugin.WorkingDirectory; }
@@ -49,12 +50,14 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
             this.windowServiceFactory = windowServiceFactory;
             this.imageDataFactory = imageDataFactory;
 
+            this.workManager = new TaskManager();
+
             PixInsightToolsMediator.Instance.RegisterLiveStackVM(this);
 
             queue = new AsyncProducerConsumerQueue<LiveStackItem>(1000);
             FilterTabs = new AsyncObservableCollection<FilterTab>();
 
-            StartLiveStackCommand = new AsyncCommand<bool>(async () => { await DoWork(); return true; });
+            StartLiveStackCommand = new AsyncCommand<bool>(async () => { await workManager.ExecuteOnceAsync(DoWork); return true; });
             CancelLiveStackCommand = new RelayCommand(CancelLiveStack);
             AddFlatFrameCommand = new AsyncCommand<bool>(async () => { await AddFlatFrame(); return true; });
             DeleteFlatMasterCommand = new RelayCommand(DeleteFlatMaster);
@@ -216,6 +219,8 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
         private async Task DoWork() {
             using (workerCTS = new CancellationTokenSource()) {
                 try {
+                    IsExpanded = false;
+
                     queue = new AsyncProducerConsumerQueue<LiveStackItem>(1000);
                     this.imageSaveMediator.ImageSaved += ImageSaveMediator_ImageSaved;
 
@@ -364,6 +369,7 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
                     }
                 } finally {
                     this.imageSaveMediator.ImageSaved -= ImageSaveMediator_ImageSaved;
+                    IsExpanded = true;
                 }
             }
         }
@@ -413,6 +419,15 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
         public IList<CalibrationFrame> FlatLibrary { get; } = new AsyncObservableCollection<CalibrationFrame>();
         public IList<CalibrationFrame> DarkLibrary { get => PixInsightToolsMediator.Instance.ToolsPlugin.DarkLibrary; }
         public IList<CalibrationFrame> BiasLibrary { get => PixInsightToolsMediator.Instance.ToolsPlugin.BiasLibrary; }
+
+        private bool isExpanded = true;
+        public bool IsExpanded {
+            get => isExpanded;
+            set {
+                isExpanded = value;
+                RaisePropertyChanged();
+            }
+        }
     }
 
     public class ColorTab : FilterTab {
@@ -507,5 +522,28 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
         public int Offset { get; }
         public int Width { get; }
         public int Height { get; }
+    }
+
+    public class TaskManager {
+        private Task _currentTask;
+        private object _lock = new object();
+
+        public Task ExecuteOnceAsync(Func<Task> taskFactory) {
+            if (_currentTask == null) {
+                lock (_lock) {
+                    if (_currentTask == null) {
+                        Task concreteTask = taskFactory();
+                        concreteTask.ContinueWith(o => { RemoveTask(); });
+                        _currentTask = concreteTask;
+                    }
+                }
+            }
+
+            return _currentTask;
+        }
+
+        private void RemoveTask() {
+            _currentTask = null;
+        }
     }
 }

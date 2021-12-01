@@ -80,8 +80,8 @@ namespace NINA.Plugins.PixInsightTools {
                 }
             }
                         
-            DarkLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringCollectionToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(DarkLibrary), "")));                        
-            BiasLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringCollectionToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(BiasLibrary), "")));
+            DarkLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(DarkLibrary), "")));                        
+            BiasLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(BiasLibrary), "")));
 
             if (!Directory.Exists(Properties.Settings.Default.WorkingDirectory)) {
                 Properties.Settings.Default.WorkingDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "N.I.N.A", "LiveStack");
@@ -97,14 +97,14 @@ namespace NINA.Plugins.PixInsightTools {
         private void DeleteBiasMaster(object obj) {
             if(obj is CalibrationFrame c) {
                 BiasLibrary.Remove(c);
-                pluginSettings.SetValueString(nameof(BiasLibrary), FromListToStringCollection(BiasLibrary));
+                pluginSettings.SetValueString(nameof(BiasLibrary), FromListToString(BiasLibrary));
             }
         }
 
         private void DeleteDarkMaster(object obj) {
             if (obj is CalibrationFrame c) {
                 DarkLibrary.Remove(c);
-                pluginSettings.SetValueString(nameof(DarkLibrary), FromListToStringCollection(DarkLibrary));
+                pluginSettings.SetValueString(nameof(DarkLibrary), FromListToString(DarkLibrary));
             }
         }
 
@@ -186,7 +186,6 @@ namespace NINA.Plugins.PixInsightTools {
                     frame.Height = properties.Height;
                 }
 
-                // todo - open wizard
                 var service = windowServiceFactory.Create();
                 var prompt = new CalibrationFramePrompt(frame);
                 await service.ShowDialog(prompt, "Calibration Frame Wizard", System.Windows.ResizeMode.NoResize, System.Windows.WindowStyle.ToolWindow);
@@ -194,10 +193,10 @@ namespace NINA.Plugins.PixInsightTools {
                 if(prompt.Continue) { 
                     if(frame.Type == CalibrationFrameType.BIAS) {
                         BiasLibrary.Add(frame);
-                        pluginSettings.SetValueString(nameof(BiasLibrary), FromListToStringCollection(BiasLibrary));
+                        pluginSettings.SetValueString(nameof(BiasLibrary), FromListToString(BiasLibrary));
                     } else if(frame.Type == CalibrationFrameType.DARK) {
                         DarkLibrary.Add(frame);
-                        pluginSettings.SetValueString(nameof(DarkLibrary), FromListToStringCollection(DarkLibrary));
+                        pluginSettings.SetValueString(nameof(DarkLibrary), FromListToString(DarkLibrary));
                     }
                 }
             }
@@ -266,22 +265,21 @@ namespace NINA.Plugins.PixInsightTools {
             }
         }
 
-        public static IList<T> FromStringCollectionToList<T>(string collection) {
-            var l = new List<T>();
-            foreach(var value in collection.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
-                var item = JsonConvert.DeserializeObject<T>(value);
-                l.Add(item);
+        public static IList<T> FromStringToList<T>(string collection) {
+            try {
+                return JsonConvert.DeserializeObject<IList<T>>(collection) ?? new List<T>();
+            } catch(Exception) {
+                return new List<T>();
             }
-            return l;
+            
         }
 
-        public static string FromListToStringCollection<T>(IList<T> l) {
-            var collection = new List<string>();
-            foreach (var value in l) {
-                var item = JsonConvert.SerializeObject(value);
-                collection.Add(item);
+        public static string FromListToString<T>(IList<T> l) {       
+            try { 
+                return JsonConvert.SerializeObject(l) ?? "";
+            } catch(Exception) {
+                return "";
             }
-            return string.Join(";", collection);
         }
 
         public IAsyncCommand AddCalibrationFrameCommand { get; }
