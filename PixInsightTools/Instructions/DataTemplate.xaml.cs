@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace NINA.Plugins.PolarAlignment.Instructions {
+namespace PixInsightTools.Instructions {
     [Export(typeof(ResourceDictionary))]
     partial class DataTemplate : ResourceDictionary {
         public DataTemplate() {

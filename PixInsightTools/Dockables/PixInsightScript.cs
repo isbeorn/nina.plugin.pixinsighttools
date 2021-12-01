@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NINA.Plugins.PixInsightTools.Dockables {
+namespace PixInsightTools.Dockables {
     class PixInsightScript {
         protected readonly static string scriptFolder = Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\NINA\Plugins\PixInsight Tools\Scripts");
         protected string workingDir;

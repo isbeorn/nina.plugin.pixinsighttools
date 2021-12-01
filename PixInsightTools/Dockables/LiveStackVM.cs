@@ -8,7 +8,7 @@ using NINA.Image.FileFormat.FITS;
 using NINA.Image.FileFormat.XISF;
 using NINA.Image.ImageData;
 using NINA.Image.Interfaces;
-using NINA.Plugins.PixInsightTools.Model;
+using PixInsightTools.Model;
 using NINA.Profile;
 using NINA.Profile.Interfaces;
 using NINA.WPF.Base.Interfaces.Mediator;
@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
-namespace NINA.Plugins.PixInsightTools.Dockables {
+namespace PixInsightTools.Dockables {
 
     [Export(typeof(IDockableVM))]
     public class LiveStackVM : DockableVM {
@@ -168,7 +168,7 @@ namespace NINA.Plugins.PixInsightTools.Dockables {
 
         private async void ImageSaveMediator_ImageSaved(object sender, ImageSavedEventArgs e) {
             try {
-                if(e.MetaData.Image.ImageType == Equipment.Model.CaptureSequence.ImageTypes.LIGHT || e.MetaData.Image.ImageType == Equipment.Model.CaptureSequence.ImageTypes.SNAPSHOT) { 
+                if(e.MetaData.Image.ImageType == NINA.Equipment.Model.CaptureSequence.ImageTypes.LIGHT || e.MetaData.Image.ImageType == NINA.Equipment.Model.CaptureSequence.ImageTypes.SNAPSHOT) { 
                     await queue.EnqueueAsync(new LiveStackItem(e.PathToImage.LocalPath, e.MetaData.Target.Name, e.Filter, e.MetaData.Image.ExposureTime, e.MetaData.Camera.Gain, e.MetaData.Camera.Offset, e.Image.PixelWidth, e.Image.PixelHeight));
                 }
             } catch (Exception) {

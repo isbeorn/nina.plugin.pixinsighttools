@@ -3,8 +3,8 @@ using NINA.Core.Model;
 using NINA.Core.Utility;
 using NINA.Image.FileFormat.XISF;
 using NINA.Image.Interfaces;
-using NINA.Plugins.PixInsightTools.Dockables;
-using NINA.Plugins.PixInsightTools.Model;
+using PixInsightTools.Dockables;
+using PixInsightTools.Model;
 using NINA.Sequencer.SequenceItem;
 using NINA.WPF.Base.Interfaces.Mediator;
 using Nito.AsyncEx;
@@ -16,7 +16,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NINA.Plugins.PixInsightTools.Instructions {
+namespace PixInsightTools.Instructions {
 
     [ExportMetadata("Name", "Stack flats")]
     [ExportMetadata("Description", "This instruction will calibrate and stack flat frames that are taken inside the current instruction set (and child instruction sets) and register the stacked flats for the live stack. Place it after your flats.")]
@@ -72,7 +72,7 @@ namespace NINA.Plugins.PixInsightTools.Instructions {
         }
 
         private void ImageSaveMediator_ImageSaved(object sender, ImageSavedEventArgs e) {
-            if (e.MetaData.Image.ImageType == Equipment.Model.CaptureSequence.ImageTypes.FLAT) {
+            if (e.MetaData.Image.ImageType == NINA.Equipment.Model.CaptureSequence.ImageTypes.FLAT) {
                 try {
                     queue.Enqueue(e);
                 } catch (Exception) {

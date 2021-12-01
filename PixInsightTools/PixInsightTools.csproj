@@ -8,8 +8,8 @@
     <ProjectGuid>{6AC8F0AB-4455-4072-9FB0-734B9E97E3CE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NINA.Plugins.PixInsightTools</RootNamespace>
-    <AssemblyName>NINA.Plugins.PixInsightTools</AssemblyName>
+    <RootNamespace>PixInsightTools</RootNamespace>
+    <AssemblyName>PixInsightTools</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

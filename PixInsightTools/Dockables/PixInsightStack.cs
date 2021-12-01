@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NINA.Plugins.PixInsightTools.Dockables {
+namespace PixInsightTools.Dockables {
 
     internal class PixInsightStack : PixInsightScript {
         private readonly static string stackScript = Path.Combine(scriptFolder, "pixelmath_stack.js");

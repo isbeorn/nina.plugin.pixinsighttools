@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace NINA.Plugins.PixInsightTools {
+namespace PixInsightTools {
     [Export(typeof(ResourceDictionary))]
     partial class Options : ResourceDictionary {
         public Options() {

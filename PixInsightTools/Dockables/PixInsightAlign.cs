@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NINA.Plugins.PixInsightTools.Dockables {
+namespace PixInsightTools.Dockables {
     internal class PixInsightAlign : PixInsightScript {
         private readonly static string alignmentScript = Path.Combine(scriptFolder, "alignment.js");
         private readonly static string alignmentPostfix = "_r";

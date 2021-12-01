@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NINA.Plugins.PixInsightTools.Dockables {
+namespace PixInsightTools.Dockables {
     internal class PixInsightCalibration : PixInsightScript {
         private readonly static string calibrateScript = Path.Combine(scriptFolder, "calibrate.js");
         private readonly static string calibrationPostfix = "_c";

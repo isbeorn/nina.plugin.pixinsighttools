@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NINA.Plugins.PixInsightTools.Dockables {
+namespace PixInsightTools.Dockables {
     internal class PixInsightResample : PixInsightScript {
         private readonly static string resampleScript = Path.Combine(scriptFolder, "resample.js");
         private readonly static string resamplePostfix = "_i";

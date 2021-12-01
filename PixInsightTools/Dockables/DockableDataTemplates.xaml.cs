@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace NINA.Plugins.PixInsightTools.Dockables {
+namespace PixInsightTools.Dockables {
     [Export(typeof(ResourceDictionary))]
     partial class DockableDataTemplates : ResourceDictionary {
         public DockableDataTemplates() {

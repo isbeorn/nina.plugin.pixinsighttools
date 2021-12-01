@@ -7,7 +7,7 @@ using NINA.Image.FileFormat.XISF;
 using NINA.Image.ImageData;
 using NINA.Plugin;
 using NINA.Plugin.Interfaces;
-using NINA.Plugins.PixInsightTools.Model;
+using PixInsightTools.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -20,12 +20,12 @@ using Newtonsoft.Json;
 using System.Windows.Input;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using NINA.Plugins.PixInsightTools.Dockables;
+using PixInsightTools.Dockables;
 using NINA.Image.Interfaces;
 using NINA.Profile.Interfaces;
 using NINA.Profile;
 
-namespace NINA.Plugins.PixInsightTools {
+namespace PixInsightTools {
     public class PixInsightToolsMediator {
 
         private PixInsightToolsMediator() { }

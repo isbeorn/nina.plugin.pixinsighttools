@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NINA.Plugins.PixInsightTools.Instructions {
+namespace PixInsightTools.Instructions {
     [ExportMetadata("Name", "Stop live stacking")]
     [ExportMetadata("Description", "This instruction will stop the live stack")]
     [ExportMetadata("Icon", "")]

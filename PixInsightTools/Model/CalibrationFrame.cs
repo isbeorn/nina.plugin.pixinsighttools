@@ -4,7 +4,7 @@ using System;
 using System.Runtime.Serialization;
 using System.Windows.Input;
 
-namespace NINA.Plugins.PixInsightTools.Model {
+namespace PixInsightTools.Model {
     public class CalibrationFramePrompt {
         public CalibrationFramePrompt(CalibrationFrame context) {
             this.Context = context;
