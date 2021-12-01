@@ -12,7 +12,8 @@
     xmlns:ns="clr-namespace:NINA.Core.Locale;assembly=NINA.Core"
     xmlns:properties="clr-namespace:PixInsightTools.Properties"
     xmlns:rules="clr-namespace:NINA.Core.Utility.ValidationRules;assembly=NINA.Core"
-    xmlns:util="clr-namespace:NINA.Core.Utility;assembly=NINA.Core">
+    xmlns:util="clr-namespace:NINA.Core.Utility;assembly=NINA.Core"
+    xmlns:wpfbase="clr-namespace:NINA.WPF.Base.View;assembly=NINA.WPF.Base">
 
     <DataTemplate x:Key="PixInsightTools.Dockables.LiveStackVM_Dockable">
         <Grid x:Name="PART_TheGrid" Margin="5">
@@ -131,52 +132,35 @@
                 <TabControl.ContentTemplate>
                     <DataTemplate>
                         <Grid>
-                            <Viewbox Stretch="Uniform">
-                                <Canvas
-                                    Width="{Binding ActualWidth, ElementName=PART_Image}"
-                                    Height="{Binding ActualHeight, ElementName=PART_Image}"
-                                    behavior:MouseCommandBehavior.Enabled="True"
-                                    behavior:MouseCommandBehavior.LeftMouseDownCommand="{Binding LeftMouseButtonDownCommand}"
-                                    ClipToBounds="True">
-                                    <Canvas.Background>
-                                        <VisualBrush>
-                                            <VisualBrush.Visual>
-                                                <Image
-                                                    x:Name="PART_Image"
-                                                    RenderOptions.BitmapScalingMode="HighQuality"
-                                                    Source="{Binding Stack}"
-                                                    Stretch="Uniform" />
-                                            </VisualBrush.Visual>
-                                        </VisualBrush>
-                                    </Canvas.Background>
-                                </Canvas>
-                            </Viewbox>
-
-                            <StackPanel
-                                Margin="5,0,0,0"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Bottom"
-                                Background="{StaticResource SecondaryBackgroundBrush}"
-                                Orientation="Vertical">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Images in stack: " />
-                                    <TextBlock Text="{Binding Count}" />
-                                </StackPanel>
-
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock VerticalAlignment="Center" Text="Do ABE?" />
-                                    <CheckBox Margin="5,0,0,0" IsChecked="{Binding EnableABE, Mode=TwoWay}" />
-                                    <TextBlock
+                            <wpfbase:ImageView Image="{Binding Stack, IsAsync=True}" ScrollEnabled="True">
+                                <wpfbase:ImageView.ButtonHeaderContent>
+                                    <StackPanel
                                         Margin="5,0,0,0"
-                                        VerticalAlignment="Center"
-                                        Text="ABE function degree:" />
-                                    <TextBox
-                                        MinWidth="30"
-                                        Margin="5,0,0,0"
-                                        VerticalAlignment="Center"
-                                        Text="{Binding ABEDegree}" />
-                                </StackPanel>
-                            </StackPanel>
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Top"
+                                        Background="{StaticResource SecondaryBackgroundBrush}"
+                                        Orientation="Vertical">
+                                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                                            <TextBlock Text="Images in stack: " />
+                                            <TextBlock Text="{Binding Count}" />
+                                        </StackPanel>
+
+                                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                                            <TextBlock VerticalAlignment="Center" Text="Do ABE?" />
+                                            <CheckBox Margin="5,0,0,0" IsChecked="{Binding EnableABE, Mode=TwoWay}" />
+                                            <TextBlock
+                                                Margin="5,0,0,0"
+                                                VerticalAlignment="Center"
+                                                Text="ABE function degree:" />
+                                            <TextBox
+                                                MinWidth="30"
+                                                Margin="5,0,0,0"
+                                                VerticalAlignment="Center"
+                                                Text="{Binding ABEDegree}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </wpfbase:ImageView.ButtonHeaderContent>
+                            </wpfbase:ImageView>
 
                             <Button
                                 HorizontalAlignment="Right"
