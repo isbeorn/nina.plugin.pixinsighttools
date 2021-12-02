@@ -26,8 +26,8 @@ using System.Runtime.InteropServices;
 
 //The assembly versioning
 //Should be incremented for each new release build of a plugin
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("0.1.0.0")]
+[assembly: AssemblyFileVersion("0.1.0.0")]
 
 //The minimum Version of N.I.N.A. that this plugin is compatible with
 [assembly: AssemblyMetadata("MinimumApplicationVersion", "2.0.0.2011")]
@@ -54,11 +54,12 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("AltScreenshotURL", "")]
 [assembly: AssemblyMetadata("LongDescription", @"This plugin provides instructions and capabilities to interact with PixInsight and use the output to display a live stack insde N.I.N.A.
 
-## **Use this plugin only on an imaging rig that has enough processing power to interact with PixInsight in parallel to imaging!**
+## **This plugin is provided as is. It is tested with various scenarios in mind, however for some gear combinations it might not work.**
+**Use this plugin only on an imaging rig that has enough processing power to interact with PixInsight in parallel to imaging!**
 
-## Prerequisites in Options
+## Prerequisites
 
-* PixInsight needs to be installed
+* PixInsight needs to be installed and up-to-date
 * Set up your PixInsight location
 * Set a working directory - this folder will be used to store calibration files and temporary files during processing
 * Adjust the remaining settings to your needs
