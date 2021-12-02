@@ -47,7 +47,7 @@
             P.executeOn(stackWindow[0].mainView);
         }
 
-        new AutoStretch().HardApply(stackWindow[0].mainView);
+        new AutoStretch().HardApply(stackWindow[0].mainView, false, -2.8, 0.25);
 
         stackWindow[0].saveAs(outputFile, false, false, false, false);
         stackWindow[0].forceClose();
