@@ -56,11 +56,13 @@ namespace PixInsightTools.Dockables {
                             hasHandle = true;
                         } catch (TimeoutException) {
                             Logger.Debug("Waiting for exclusive access to start pixinsight has timed out");
+                        } finally {
+                            if (hasHandle) {
+                                mutex.ReleaseMutex();
+                            }
                         }
-                    } finally {
-                        if (hasHandle) {
-                            mutex.ReleaseMutex();
-                        }
+                    } catch(Exception ex) {
+                        Logger.Error(ex);
                     }
                 }
             });

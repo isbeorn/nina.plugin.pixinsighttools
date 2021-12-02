@@ -501,7 +501,7 @@ namespace PixInsightTools.Dockables {
             Count = 0;
             Locked = false;
             EnableABE = false;
-            ABEDegree = 3;
+            ABEDegree = 2;
         }
 
         private BitmapSource stack;
