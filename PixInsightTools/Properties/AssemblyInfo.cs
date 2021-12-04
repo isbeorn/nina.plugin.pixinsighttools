@@ -54,7 +54,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("AltScreenshotURL", "")]
 [assembly: AssemblyMetadata("LongDescription", @"This plugin provides instructions and capabilities to interact with PixInsight and use the output to display a live stack insde N.I.N.A.
 
-## **This plugin is provided as is. It is tested with various scenarios in mind, however for some gear combinations it might not work.**
+## **This plugin is provided as is. It is tested with various scenarios in mind, however for some use cases it might not work.**
 **Use this plugin only on an imaging rig that has enough processing power to interact with PixInsight in parallel to imaging!**
 **Furthermore you need long enough subs for the live stack to process everything, otherwise the machine will always be busy catching up.**
 
@@ -62,14 +62,14 @@ using System.Runtime.InteropServices;
 
 * PixInsight needs to be installed and up-to-date
 * Set up your PixInsight location
-* Set a working directory - this folder will be used to store calibration files and temporary files during processing
-* Adjust the remaining settings to your needs
+* Set a working directory - this folder will be used to store calibration files, temporary files as well as the live stack files
+* Adjust the remaining settings on the plugin page to your needs
 * Add BIAS or DARK master files (optional)
 
 ## Sequencer Instructions
 
 * Stack Flats
-    + Place this after a set of instructions that take FLAT frames
+    + Place this inside a set of instructions that take FLAT frames below the last flat capture instruction
     + While flats are being taken, the instruction will gather these frames and calibrate them in the background. Filter meta data will automatically be considered to separate these.
     + Once the instruction is reached, it will take all flats that have been gathered up to that point and will stack them together
     + After the stack has been created it will be automatically put into the session library of the live stack panel
@@ -83,7 +83,7 @@ using System.Runtime.InteropServices;
 ## Live Stacking Panel
 * Expander options
     + Inside the expander you can manually add flat masters, or alternatively automatically let them be filled by the **Stack Flats** instruction
-    + Furthermore a color combination can be specified, once at least two image stacks are available
+    + Furthermore a color combination can be specified when there are at least two different filters for one target available. The color stack will be created after the next frame is stacked.
 
 * Start live stack
     + Once the live stack is started, the plugin will listen for any light frame that is being captured. 
