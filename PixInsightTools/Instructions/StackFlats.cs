@@ -3,6 +3,7 @@ using NINA.Core.Model;
 using NINA.Core.Utility;
 using NINA.Image.FileFormat.XISF;
 using NINA.Image.Interfaces;
+using NINA.Sequencer.Container;
 using NINA.Sequencer.SequenceItem;
 using NINA.WPF.Base.Interfaces.Mediator;
 using Nito.AsyncEx;
@@ -134,6 +135,23 @@ namespace PixInsightTools.Instructions {
                 }
             } catch (OperationCanceledException) { }
         }
+        private string RetrieveTarget(ISequenceContainer parent) {
+            if (parent != null) {
+                var container = parent as IDeepSkyObjectContainer;
+                if (container != null) {
+                    if(string.IsNullOrWhiteSpace(container.Target.DeepSkyObject.NameAsAscii)) {
+                        return LiveStackVM.NOTARGET;
+                    } else {
+                        return container.Target.DeepSkyObject.NameAsAscii;
+                    }
+                    
+                } else {
+                    return RetrieveTarget(parent.Parent);
+                }
+            } else {
+                return LiveStackVM.NOTARGET;
+            }
+        }
 
         public override async Task Execute(IProgress<ApplicationStatus> progress, CancellationToken token) {
             await Task.Run(async () => {
@@ -154,9 +172,10 @@ namespace PixInsightTools.Instructions {
                             Logger.Info($"Generating flat master for filter {filter}");
                             progress?.Report(new ApplicationStatus() { Status = $"Generating flat master for filter {filter}" });
                             var flatsForIntegration = string.Join("|", FlatsToIntegrate[filter]);
+                            var target = RetrieveTarget(this.Parent);
 
                             var slot = 153;
-                            var master = await new PixInsightFlatIntegration(workingDir, slot).Run(filter, flatsForIntegration, progress, token);
+                            var master = await new PixInsightFlatIntegration(workingDir, slot).Run(target, filter, flatsForIntegration, progress, token);
 
                             var xisf = await XISF.Load(new Uri(master), false, imageDataFactory, token);
 

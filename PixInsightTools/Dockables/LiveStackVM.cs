@@ -188,7 +188,7 @@ namespace PixInsightTools.Dockables {
         }
 
         private string GetStackName(string target, string filter) {
-            return $"STACK_{target}_{filter}.xisf";
+            return $"STACK_LIGHT_{target}_{filter}.xisf";
         }
 
         private async Task TryDeleteFile(string path) {
@@ -214,8 +214,8 @@ namespace PixInsightTools.Dockables {
             return tab;
         }
 
-        public static readonly string NOTARGET = "No target";
-        public static readonly string NOFILTER = "No filter";
+        public static readonly string NOTARGET = "No_target";
+        public static readonly string NOFILTER = "No_filter";
         public static readonly string RGB = "RGB";
 
         private async Task DoWork() {

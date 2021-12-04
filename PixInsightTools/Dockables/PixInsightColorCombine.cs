@@ -23,7 +23,7 @@ namespace PixInsightTools.Dockables {
             this.target = target;
         }
         public async Task<string> Run(IProgress<ApplicationStatus> progress, CancellationToken ct) {
-            var output = Path.Combine(workingDir, $"STACK_{target}{colorcombinePostFix}.png");
+            var output = Path.Combine(workingDir, $"STACK_LIGHT_{target}{colorcombinePostFix}.png");
 
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = "Combining colors" });
             await RunPixInsightScript($" --execute={pixInsightSlot}:\"{colorcombineScript},'{guid}',{r},{g},{b},{output},{workingDir}\" --automation-mode", progress, ct);
