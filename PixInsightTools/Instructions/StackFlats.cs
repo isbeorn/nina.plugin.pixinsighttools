@@ -3,11 +3,11 @@ using NINA.Core.Model;
 using NINA.Core.Utility;
 using NINA.Image.FileFormat.XISF;
 using NINA.Image.Interfaces;
-using PixInsightTools.Dockables;
-using PixInsightTools.Model;
 using NINA.Sequencer.SequenceItem;
 using NINA.WPF.Base.Interfaces.Mediator;
 using Nito.AsyncEx;
+using PixInsightTools.Dockables;
+using PixInsightTools.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -54,12 +54,12 @@ namespace PixInsightTools.Instructions {
             return clone;
         }
 
-        public int QueueEntries { 
-            get => queueEntries; 
+        public int QueueEntries {
+            get => queueEntries;
             set {
                 queueEntries = value;
                 RaisePropertyChanged();
-            } 
+            }
         }
 
         public override void SequenceBlockInitialize() {
@@ -101,31 +101,36 @@ namespace PixInsightTools.Instructions {
                 await new PixInsightStartup(workingDir, slot).Run(progress, cts.Token);
 
                 while (await queue.OutputAvailableAsync(cts.Token)) {
-                    cts.Token.ThrowIfCancellationRequested();
-                    var item = await queue.DequeueAsync(cts.Token);
+                    try {
+                        cts.Token.ThrowIfCancellationRequested();
+                        var item = await queue.DequeueAsync(cts.Token);
 
-                    var bias = GetBiasMaster(item);
+                        Logger.Info("Prepareing flat frame for Master Stack");
+                        var bias = GetBiasMaster(item);
 
-                    var flatToIntegrate = item.PathToImage.LocalPath;
-                    if (bias != null) {
-                        flatToIntegrate = await new PixInsightCalibration(workingDir, slot, false, 0, false, string.Empty, string.Empty, bias.Path).Run(flatToIntegrate, default, default);
+                        var flatToIntegrate = item.PathToImage.LocalPath;
+                        if (bias != null) {
+                            flatToIntegrate = await new PixInsightCalibration(workingDir, slot, false, 0, false, string.Empty, string.Empty, bias.Path).Run(flatToIntegrate, default, default);
+                        }
+
+                        var filter = string.IsNullOrWhiteSpace(item.Filter) ? LiveStackVM.NOFILTER : item.Filter;
+                        var destinationFolder = Path.Combine(workingDir, "calibrated", "flat", filter);
+                        if (!Directory.Exists(destinationFolder)) {
+                            Directory.CreateDirectory(destinationFolder);
+                        }
+
+                        var destinationFile = Path.Combine(destinationFolder, Path.GetFileName(flatToIntegrate));
+                        File.Copy(flatToIntegrate, destinationFile, true);
+
+                        if (!FlatsToIntegrate.ContainsKey(filter)) {
+                            FlatsToIntegrate[filter] = new List<string>();
+                        }
+                        FlatsToIntegrate[filter].Add(destinationFile);
+                        Interlocked.Decrement(ref queueEntries);
+                        RaisePropertyChanged(nameof(QueueEntries));
+                    } catch (Exception ex) {
+                        Logger.Error(ex);
                     }
-
-                    var filter = string.IsNullOrWhiteSpace(item.Filter) ? LiveStackVM.NOFILTER : item.Filter;
-                    var destinationFolder = Path.Combine(workingDir, "calibrated", "flat", filter);
-                    if (!Directory.Exists(destinationFolder)) {
-                        Directory.CreateDirectory(destinationFolder);
-                    }
-
-                    var destinationFile = Path.Combine(destinationFolder, Path.GetFileName(flatToIntegrate));
-                    File.Copy(flatToIntegrate, destinationFile, true);
-
-                    if (!FlatsToIntegrate.ContainsKey(filter)) {
-                        FlatsToIntegrate[filter] = new List<string>();
-                    }
-                    FlatsToIntegrate[filter].Add(destinationFile);
-                    Interlocked.Decrement(ref queueEntries);
-                    RaisePropertyChanged(nameof(QueueEntries));
                 }
             } catch (OperationCanceledException) { }
         }

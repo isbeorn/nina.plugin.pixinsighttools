@@ -61,8 +61,8 @@ namespace PixInsightTools.Dockables {
             await statusFileCleanup();
 
             var psi = new ProcessStartInfo($"\"{Properties.Settings.Default.PixInsightLocation}\"", arguments);
-            Process.Start(psi);
             Logger.Info($"Starting process: {psi.FileName} {psi.Arguments}");
+            Process.Start(psi);
 
             bool fileExists = false;
             var fileContent = string.Empty;

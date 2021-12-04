@@ -23,14 +23,18 @@ namespace PixInsightTools.Dockables {
 
             FilterTabs = allTabs.Where(x => x.Target == target).ToList();
 
-            RedChannel = FilterTabs.First();
-            BlueChannel = FilterTabs.First();
-            GreenChannel = FilterTabs.First();
+            RedChannel = GetFilterForChannel("Red");
+            BlueChannel = GetFilterForChannel("Blue");
+            GreenChannel = GetFilterForChannel("Green");
 
             RaisePropertyChanged(nameof(FilterTabs));
             RaisePropertyChanged(nameof(RedChannel));
             RaisePropertyChanged(nameof(BlueChannel));
             RaisePropertyChanged(nameof(GreenChannel));
+        }
+
+        private FilterTab GetFilterForChannel(string target) {
+            return FilterTabs.OrderBy(x => Fastenshtein.Levenshtein.Distance(target, x.Filter)).First();            
         }
 
         private string target;
