@@ -56,6 +56,7 @@ using System.Runtime.InteropServices;
 
 ## **This plugin is provided as is. It is tested with various scenarios in mind, however for some gear combinations it might not work.**
 **Use this plugin only on an imaging rig that has enough processing power to interact with PixInsight in parallel to imaging!**
+**Furthermore you need long enough subs for the live stack to process everything, otherwise the machine will always be busy catching up.**
 
 ## Prerequisites
 

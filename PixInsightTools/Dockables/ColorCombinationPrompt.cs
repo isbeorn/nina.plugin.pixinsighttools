@@ -1,4 +1,5 @@
 ﻿using NINA.Core.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
@@ -23,10 +24,29 @@ namespace PixInsightTools.Dockables {
 
             FilterTabs = allTabs.Where(x => x.Target == target).ToList();
 
-            RedChannel = GetFilterForChannel("Red");
-            BlueChannel = GetFilterForChannel("Blue");
-            GreenChannel = GetFilterForChannel("Green");
+            var distanceRed = int.MaxValue;
+            var distanceHa = int.MaxValue;            
+            for(int i = 0; i < FilterTabs.Count; i++) {
+                distanceRed = Math.Min(distanceRed, Fastenshtein.Levenshtein.Distance("Red", FilterTabs[i].Filter));
+                distanceHa = Math.Min(distanceRed, Fastenshtein.Levenshtein.Distance("HA", FilterTabs[i].Filter));
+            }
 
+            if(distanceRed <= distanceHa) { 
+                RedChannel = GetFilterForChannel("Red");
+                GreenChannel = GetFilterForChannel("Green");
+                BlueChannel = GetFilterForChannel("Blue");
+            } else {
+                if(FilterTabs.Count < 3) {
+                    RedChannel = GetFilterForChannel("HA");
+                    GreenChannel = GetFilterForChannel("OIII");
+                    BlueChannel = GetFilterForChannel("OIII");
+                } else {
+                    RedChannel = GetFilterForChannel("SII");
+                    GreenChannel = GetFilterForChannel("HA");
+                    BlueChannel = GetFilterForChannel("OIII");
+                }                
+            }
+             
             RaisePropertyChanged(nameof(FilterTabs));
             RaisePropertyChanged(nameof(RedChannel));
             RaisePropertyChanged(nameof(BlueChannel));
