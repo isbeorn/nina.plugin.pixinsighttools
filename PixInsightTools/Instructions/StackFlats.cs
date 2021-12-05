@@ -64,12 +64,15 @@ namespace PixInsightTools.Instructions {
         }
 
         public override void SequenceBlockInitialize() {
-            imageSaveMediator.ImageSaved += ImageSaveMediator_ImageSaved;
             try {
                 cts?.Dispose();
             } catch (Exception) { }
 
             cts = new CancellationTokenSource();
+
+            FlatsToIntegrate.Clear();
+            queue = new AsyncProducerConsumerQueue<ImageSavedEventArgs>(1000);
+            imageSaveMediator.ImageSaved += ImageSaveMediator_ImageSaved;
             workerTask = StartCalibrationQueueWorker();
         }
 
@@ -129,6 +132,8 @@ namespace PixInsightTools.Instructions {
                         FlatsToIntegrate[filter].Add(destinationFile);
                         Interlocked.Decrement(ref queueEntries);
                         RaisePropertyChanged(nameof(QueueEntries));
+                    } catch(OperationCanceledException) {
+                        throw;
                     } catch (Exception ex) {
                         Logger.Error(ex);
                     }
@@ -155,7 +160,7 @@ namespace PixInsightTools.Instructions {
 
         public override async Task Execute(IProgress<ApplicationStatus> progress, CancellationToken token) {
             await Task.Run(async () => {
-                if (FlatsToIntegrate.Keys.Count == 0) {
+                if (queueEntries <= 0 && FlatsToIntegrate.Keys.Count == 0) {
                     Logger.Info("No flat frames to stack");
                 } else {
                     Logger.Info("Stop listening for flat frames to calibrate");
