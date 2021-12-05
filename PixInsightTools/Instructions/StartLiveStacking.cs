@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace PixInsightTools.Instructions {
     [ExportMetadata("Name", "Start live stacking")]
     [ExportMetadata("Description", "This instruction will start the live stack")]
-    [ExportMetadata("Icon", "")]
+    [ExportMetadata("Icon", "PixInsightTools_StackSVG")]
     [ExportMetadata("Category", "PixInsight Tools")]
     [Export(typeof(ISequenceItem))]
     [JsonObject(MemberSerialization.OptIn)]

@@ -21,7 +21,7 @@ namespace PixInsightTools.Instructions {
 
     [ExportMetadata("Name", "Stack flats")]
     [ExportMetadata("Description", "This instruction will calibrate and stack flat frames that are taken inside the current instruction set (and child instruction sets) and register the stacked flats master for the live stack. Place it after your flats.")]
-    [ExportMetadata("Icon", "")]
+    [ExportMetadata("Icon", "PixInsightTools_StackFlatsSVG")]
     [ExportMetadata("Category", "PixInsight Tools")]
     [Export(typeof(ISequenceItem))]
     [JsonObject(MemberSerialization.OptIn)]

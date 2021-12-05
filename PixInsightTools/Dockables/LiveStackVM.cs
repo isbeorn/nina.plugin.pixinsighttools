@@ -27,6 +27,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using NINA.Core.Enum;
 using Accord.Imaging.Filters;
+using System.Windows;
 
 namespace PixInsightTools.Dockables {
 
@@ -47,13 +48,18 @@ namespace PixInsightTools.Dockables {
         [ImportingConstructor]
         public LiveStackVM(IProfileService profileService, IImageSaveMediator imageSaveMediator, IApplicationStatusMediator applicationStatusMediator, IWindowServiceFactory windowServiceFactory, IImageDataFactory imageDataFactory) : base(profileService) {
             this.Title = "PixInsight Live Stacking";
+            var dict = new ResourceDictionary();
+            dict.Source = new Uri("PixInsightTools;component/Options.xaml", UriKind.RelativeOrAbsolute);
+            ImageGeometry = (System.Windows.Media.GeometryGroup)dict["PixInsightTools_StackSVG"];
+            ImageGeometry.Freeze();
+
             this.imageSaveMediator = imageSaveMediator;
             this.applicationStatusMediator = applicationStatusMediator;
             this.windowServiceFactory = windowServiceFactory;
             this.imageDataFactory = imageDataFactory;
 
             this.workManager = new TaskManager();
-
+            
             PixInsightToolsMediator.Instance.RegisterLiveStackVM(this);
 
             queue = new AsyncProducerConsumerQueue<LiveStackItem>(1000);
