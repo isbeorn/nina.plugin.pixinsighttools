@@ -62,7 +62,8 @@ namespace PixInsightTools.Dockables {
 
             var psi = new ProcessStartInfo($"\"{Properties.Settings.Default.PixInsightLocation}\"", arguments);
             Logger.Info($"Starting process: {psi.FileName} {psi.Arguments}");
-            Process.Start(psi);
+            var p = Process.Start(psi);
+            p.PriorityClass = ProcessPriorityClass.BelowNormal;
 
             bool fileExists = false;
             var fileContent = string.Empty;
