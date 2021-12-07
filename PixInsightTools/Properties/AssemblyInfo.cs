@@ -47,7 +47,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("Tags", "PixInsight,Sequencer")]
 
 //The featured logo that will be displayed in the plugin list next to the name
-[assembly: AssemblyMetadata("FeaturedImageURL", "")]
+[assembly: AssemblyMetadata("FeaturedImageURL", "https://bitbucket.org/Isbeorn/nina.plugin.pixinsighttools/downloads/logo.png")]
 //An example screenshot of your plugin in action
 [assembly: AssemblyMetadata("ScreenshotURL", "https://bitbucket.org/Isbeorn/nina.plugin.pixinsighttools/downloads/LiveStackTab.png")]
 //An additional example screenshot of your plugin in action
