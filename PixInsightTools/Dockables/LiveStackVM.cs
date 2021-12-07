@@ -194,7 +194,7 @@ namespace PixInsightTools.Dockables {
         }
 
         private string GetStackName(string target, string filter) {
-            return $"STACK_LIGHT_{target}_{filter}.xisf";
+            return $"MASTER_LIGHT_{target}_{filter}.xisf";
         }
 
         private async Task TryDeleteFile(string path) {

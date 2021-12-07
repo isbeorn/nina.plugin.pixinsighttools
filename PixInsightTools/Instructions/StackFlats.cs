@@ -160,13 +160,16 @@ namespace PixInsightTools.Instructions {
 
         public override async Task Execute(IProgress<ApplicationStatus> progress, CancellationToken token) {
             await Task.Run(async () => {
+                Logger.Info("Stop listening for flat frames to calibrate");
+                queue.CompleteAdding();
+                imageSaveMediator.ImageSaved -= ImageSaveMediator_ImageSaved;
+
                 if (queueEntries <= 0 && FlatsToIntegrate.Keys.Count == 0) {
                     Logger.Info("No flat frames to stack");
                 } else {
-                    Logger.Info("Stop listening for flat frames to calibrate");
-
-                    queue.CompleteAdding();
-                    imageSaveMediator.ImageSaved -= ImageSaveMediator_ImageSaved;
+                    if(FlatsToIntegrate.Keys.Count < 3) {
+                        throw new Exception("Not enough flats to generate masters");
+                    }
 
                     Logger.Info("Finishing up remaining flat calibration");
                     progress?.Report(new ApplicationStatus() { Status = $"Waiting for flat calibration to finish" });
@@ -174,9 +177,10 @@ namespace PixInsightTools.Instructions {
 
                     foreach (var filter in FlatsToIntegrate.Keys) {
                         try {
+                            var list = FlatsToIntegrate[filter].ToArray();
                             Logger.Info($"Generating flat master for filter {filter}");
                             progress?.Report(new ApplicationStatus() { Status = $"Generating flat master for filter {filter}" });
-                            var flatsForIntegration = string.Join("|", FlatsToIntegrate[filter]);
+                            var flatsForIntegration = string.Join("|", list);
                             var target = RetrieveTarget(this.Parent);
 
                             var slot = 153;
@@ -188,7 +192,7 @@ namespace PixInsightTools.Instructions {
                             PixInsightToolsMediator.Instance.AddFlatMaster(new CalibrationFrame(master, 0, 0, 0, filter) { Width = xisf.Properties.Width, Height = xisf.Properties.Height });
 
                             Logger.Info($"Cleaning up flat files for filter {filter}");
-                            foreach (var file in FlatsToIntegrate[filter]) {
+                            foreach (var file in list) {
                                 try {
                                     File.Delete(file);
                                 } catch (Exception) {
