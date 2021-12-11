@@ -167,9 +167,6 @@ namespace PixInsightTools.Instructions {
                 if (queueEntries <= 0 && FlatsToIntegrate.Keys.Count == 0) {
                     Logger.Info("No flat frames to stack");
                 } else {
-                    if(FlatsToIntegrate.Keys.Count < 3) {
-                        throw new Exception("Not enough flats to generate masters");
-                    }
 
                     Logger.Info("Finishing up remaining flat calibration");
                     progress?.Report(new ApplicationStatus() { Status = $"Waiting for flat calibration to finish" });
@@ -177,7 +174,13 @@ namespace PixInsightTools.Instructions {
 
                     foreach (var filter in FlatsToIntegrate.Keys) {
                         try {
+
                             var list = FlatsToIntegrate[filter].ToArray();
+
+                            if (list.Length < 3) {
+                                throw new Exception($"Not enough flats to generate masters for {filter}");
+                            }
+
                             Logger.Info($"Generating flat master for filter {filter}");
                             progress?.Report(new ApplicationStatus() { Status = $"Generating flat master for filter {filter}" });
                             var flatsForIntegration = string.Join("|", list);
