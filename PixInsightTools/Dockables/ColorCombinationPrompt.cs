@@ -12,7 +12,7 @@ namespace PixInsightTools.Dockables {
 
         public ColorCombinationPrompt(AsyncObservableCollection<FilterTab> filterTabs) {
             this.allTabs = filterTabs;
-            this.ContinueCommand = new RelayCommand((object o) => { Continue = true; });
+            this.ContinueCommand = new GalaSoft.MvvmLight.Command.RelayCommand(() => { Continue = true; });
 
             Targets = allTabs.GroupBy(x => x.Target).Where(g => g.All(x => x.Filter != LiveStackVM.RGB)).Select(x => x.First()).Select(x => x.Target).ToList();
 

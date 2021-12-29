@@ -25,7 +25,7 @@
     </GeometryGroup>
 
     <DataTemplate x:Key="PixInsight Tools_Options">
-        <Grid x:Name="PART_TheGrid" DataContext="{Binding}">
+        <Grid x:Name="PART_TheGrid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />

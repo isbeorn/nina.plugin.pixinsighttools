@@ -10,7 +10,7 @@
         <DataTemplate.Resources>
             <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
         </DataTemplate.Resources>
-        <nina:SequenceBlockView DataContext="{Binding}">
+        <nina:SequenceBlockView>
             <nina:SequenceBlockView.SequenceItemProgressContent>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Flats In Queue" />

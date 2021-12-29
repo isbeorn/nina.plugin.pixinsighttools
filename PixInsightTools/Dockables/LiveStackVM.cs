@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using NINA.Core.Enum;
 using NINA.Core.Model;
 using NINA.Core.Utility;
 using NINA.Core.Utility.Notification;
@@ -8,26 +9,21 @@ using NINA.Image.FileFormat.FITS;
 using NINA.Image.FileFormat.XISF;
 using NINA.Image.ImageData;
 using NINA.Image.Interfaces;
-using PixInsightTools.Model;
-using NINA.Profile;
 using NINA.Profile.Interfaces;
 using NINA.WPF.Base.Interfaces.Mediator;
 using NINA.WPF.Base.ViewModel;
 using Nito.AsyncEx;
+using PixInsightTools.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using NINA.Core.Enum;
-using Accord.Imaging.Filters;
-using System.Windows;
 
 namespace PixInsightTools.Dockables {
 
@@ -59,16 +55,16 @@ namespace PixInsightTools.Dockables {
             this.imageDataFactory = imageDataFactory;
 
             this.workManager = new TaskManager();
-            
+
             PixInsightToolsMediator.Instance.RegisterLiveStackVM(this);
 
             queue = new AsyncProducerConsumerQueue<LiveStackItem>(1000);
             FilterTabs = new AsyncObservableCollection<FilterTab>();
 
             StartLiveStackCommand = new AsyncCommand<bool>(async () => { await workManager.ExecuteOnceAsync(DoWork); return true; });
-            CancelLiveStackCommand = new RelayCommand(CancelLiveStack);
+            CancelLiveStackCommand = new GalaSoft.MvvmLight.Command.RelayCommand(CancelLiveStack);
             AddFlatFrameCommand = new AsyncCommand<bool>(async () => { await AddFlatFrame(); return true; });
-            DeleteFlatMasterCommand = new RelayCommand(DeleteFlatMaster);
+            DeleteFlatMasterCommand = new GalaSoft.MvvmLight.Command.RelayCommand<CalibrationFrame>(DeleteFlatMaster);
             RemoveTabCommand = new AsyncCommand<bool>((object o) => RemoveTab(o), (object o) => !SelectedTab?.Locked ?? false);
             AddColorCombinationCommand = new AsyncCommand<bool>(AddColorCombination, (object o) => FilterTabs?.Count > 1);
         }
@@ -88,10 +84,8 @@ namespace PixInsightTools.Dockables {
             return prompt.Continue;
         }
 
-        private void DeleteFlatMaster(object obj) {
-            if (obj is CalibrationFrame c) {
-                FlatLibrary.Remove(c);
-            }
+        private void DeleteFlatMaster(CalibrationFrame c) {
+            FlatLibrary.Remove(c);
         }
 
         private async Task<bool> RemoveTab(object obj) {
@@ -161,7 +155,7 @@ namespace PixInsightTools.Dockables {
             }
         }
 
-        private void CancelLiveStack(object obj) {
+        private void CancelLiveStack() {
             try {
                 workerCTS?.Cancel();
             } catch (Exception) { }
@@ -176,7 +170,7 @@ namespace PixInsightTools.Dockables {
 
         private async void ImageSaveMediator_ImageSaved(object sender, ImageSavedEventArgs e) {
             try {
-                if(e.MetaData.Image.ImageType == NINA.Equipment.Model.CaptureSequence.ImageTypes.LIGHT || e.MetaData.Image.ImageType == NINA.Equipment.Model.CaptureSequence.ImageTypes.SNAPSHOT) {                     
+                if (e.MetaData.Image.ImageType == NINA.Equipment.Model.CaptureSequence.ImageTypes.LIGHT || e.MetaData.Image.ImageType == NINA.Equipment.Model.CaptureSequence.ImageTypes.SNAPSHOT) {
                     await queue.EnqueueAsync(new LiveStackItem(e.PathToImage.LocalPath, e.MetaData.Target.Name, e.Filter, e.MetaData.Image.ExposureTime, e.MetaData.Camera.Gain, e.MetaData.Camera.Offset, e.Image.PixelWidth, e.Image.PixelHeight, e.IsBayered, e.MetaData.Camera.BayerPattern));
                 }
             } catch (Exception) {
@@ -261,7 +255,6 @@ namespace PixInsightTools.Dockables {
                             if (dark == null) {
                                 bias = GetBiasMaster(item);
                             }
-                            
 
                             bool calibrated = false;
                             var referenceFile = item.Path;
@@ -294,11 +287,11 @@ namespace PixInsightTools.Dockables {
                                 calibrated = true;
                             }
 
-                            if (item.IsBayered) {  
-                                  string pattern = item.BayerPattern.ToString();
-                                  if (item.BayerPattern == BayerPatternEnum.Auto) {
-                                        pattern = BayerPatternEnum.RGGB.ToString();
-                                    }
+                            if (item.IsBayered) {
+                                string pattern = item.BayerPattern.ToString();
+                                if (item.BayerPattern == BayerPatternEnum.Auto) {
+                                    pattern = BayerPatternEnum.RGGB.ToString();
+                                }
                                 debayeredFile = await new PixInsightDebayer(workingDir, slot).Run(referenceFile, item.BayerPattern.ToString(), progress, workerCTS.Token);
                                 referenceFile = debayeredFile;
                             }
@@ -443,6 +436,7 @@ namespace PixInsightTools.Dockables {
         public IList<CalibrationFrame> BiasLibrary { get => PixInsightToolsMediator.Instance.ToolsPlugin.BiasLibrary; }
 
         private bool isExpanded = true;
+
         public bool IsExpanded {
             get => isExpanded;
             set {

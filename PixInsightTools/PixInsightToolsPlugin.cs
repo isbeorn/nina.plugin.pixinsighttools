@@ -92,27 +92,40 @@ namespace PixInsightTools {
                 CoreUtil.SaveSettings( Properties.Settings.Default);
             }
             AddCalibrationFrameCommand = new AsyncCommand<bool>(async () => { await AddCalibrationFrame(); return true; });
-            OpenPixinsightFileDiagCommand = new RelayCommand(OpenPixinsightFileDiag);
-            OpenWorkingFolderDiagCommand = new RelayCommand(OpenWorkingFolderDiag);
-            DeleteDarkMasterCommand = new RelayCommand(DeleteDarkMaster);
-            DeleteBiasMasterCommand = new RelayCommand(DeleteBiasMaster);
+            OpenPixinsightFileDiagCommand = new GalaSoft.MvvmLight.Command.RelayCommand(OpenPixinsightFileDiag);
+            OpenWorkingFolderDiagCommand = new GalaSoft.MvvmLight.Command.RelayCommand(OpenWorkingFolderDiag);
+            DeleteDarkMasterCommand = new GalaSoft.MvvmLight.Command.RelayCommand<CalibrationFrame>(DeleteDarkMaster);
+            DeleteBiasMasterCommand = new GalaSoft.MvvmLight.Command.RelayCommand<CalibrationFrame>(DeleteBiasMaster);
+            profileService.ProfileChanged += ProfileService_ProfileChanged;
         }
 
-        private void DeleteBiasMaster(object obj) {
-            if(obj is CalibrationFrame c) {
-                BiasLibrary.Remove(c);
-                pluginSettings.SetValueString(nameof(BiasLibrary), FromListToString(BiasLibrary));
-            }
+        private void ProfileService_ProfileChanged(object sender, EventArgs e) {
+            DarkLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(DarkLibrary), "")));
+            BiasLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(BiasLibrary), "")));
+            RaisePropertyChanged(nameof(KeepCalibratedFiles));
+            RaisePropertyChanged(nameof(UseBiasForLights));
+            RaisePropertyChanged(nameof(CompressCalibratedFiles));
+            RaisePropertyChanged(nameof(SaveAs16Bit));
+            RaisePropertyChanged(nameof(ResampleAmount));
+            RaisePropertyChanged(nameof(Pedestal));
         }
 
-        private void DeleteDarkMaster(object obj) {
-            if (obj is CalibrationFrame c) {
-                DarkLibrary.Remove(c);
-                pluginSettings.SetValueString(nameof(DarkLibrary), FromListToString(DarkLibrary));
-            }
+        public override Task Teardown() {
+            profileService.ProfileChanged -= ProfileService_ProfileChanged;
+            return base.Teardown();
         }
 
-        private void OpenWorkingFolderDiag(object obj) {
+        private void DeleteBiasMaster(CalibrationFrame c) {
+            BiasLibrary.Remove(c);
+            pluginSettings.SetValueString(nameof(BiasLibrary), FromListToString(BiasLibrary));
+        }
+
+        private void DeleteDarkMaster(CalibrationFrame c) {
+            DarkLibrary.Remove(c);
+            pluginSettings.SetValueString(nameof(DarkLibrary), FromListToString(DarkLibrary));
+        }
+
+        private void OpenWorkingFolderDiag() {
             using (var diag = new System.Windows.Forms.FolderBrowserDialog()) {
                 if(Directory.Exists(WorkingDirectory)) {
                     diag.SelectedPath = WorkingDirectory;
@@ -127,7 +140,7 @@ namespace PixInsightTools {
             }
         }
 
-        private void OpenPixinsightFileDiag(object obj) {
+        private void OpenPixinsightFileDiag() {
             var dialog = new OpenFileDialog();
             
             if(Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "PixInsight", "bin"))) {
@@ -214,7 +227,7 @@ namespace PixInsightTools {
                 RaisePropertyChanged();
             }
         }
-
+       
         public bool UseBiasForLights {
             get => pluginSettings.GetValueBoolean(nameof(UseBiasForLights), false);
             set {
@@ -222,7 +235,7 @@ namespace PixInsightTools {
                 RaisePropertyChanged();
             }
         }
-
+       
         public bool CompressCalibratedFiles {
             get => pluginSettings.GetValueBoolean(nameof(CompressCalibratedFiles), false);
             set {
@@ -230,7 +243,7 @@ namespace PixInsightTools {
                 RaisePropertyChanged();
             }
         }
-
+        
         public bool SaveAs16Bit {
             get => pluginSettings.GetValueBoolean(nameof(SaveAs16Bit), false);
             set {
@@ -246,7 +259,7 @@ namespace PixInsightTools {
                 RaisePropertyChanged();
             }
         }
-
+        
         public int Pedestal {
             get => pluginSettings.GetValueInt32(nameof(Pedestal), 0);
             set {
