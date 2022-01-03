@@ -30,7 +30,7 @@ function debayer() {
     P.noiseReductionFilterRadius = 0;
     P.minStructureSize = 0;
     P.psfType = Debayer.prototype.PSFType_Moffat4;
-    P.psfRejectionLimit = 5.00;
+    P.psfRejectionLimit = 0.90;
     P.maxStars = 24576;
     P.inputHints = "";
     P.outputHints = "";

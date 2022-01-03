@@ -67,6 +67,7 @@ namespace PixInsightTools.Dockables {
             DeleteFlatMasterCommand = new GalaSoft.MvvmLight.Command.RelayCommand<CalibrationFrame>(DeleteFlatMaster);
             RemoveTabCommand = new AsyncCommand<bool>((object o) => RemoveTab(o), (object o) => !SelectedTab?.Locked ?? false);
             AddColorCombinationCommand = new AsyncCommand<bool>(AddColorCombination, (object o) => FilterTabs?.Count > 1);
+
         }
 
         private async Task<bool> AddColorCombination(object arg) {
@@ -324,6 +325,11 @@ namespace PixInsightTools.Dockables {
                                 FilterTabs.Add(tab);
                             }
 
+                            if (PixInsightToolsMediator.Instance.ToolsPlugin.EvaluateNoise) {
+                               var (noiseSigma, noisePercentage)= await new PixInsightNoiseEvaluation(stackPath, item.IsBayered, workingDir, slot).Run(progress, workerCTS.Token);
+                                tab.AddNoiseEvaluation(noiseSigma, noisePercentage);
+                            }
+
                             if (item.IsBayered) {
                                 await TryDeleteFile(debayeredFile);
                             }
@@ -472,6 +478,29 @@ namespace PixInsightTools.Dockables {
                 RaisePropertyChanged();
             }
         }
+        private double sigmaStart = double.NaN;
+
+        public double SigmaStart {
+            get => sigmaStart;
+            set {
+                sigmaStart = value;
+                RaisePropertyChanged();
+            }
+        }
+        private double sigmaNow = double.NaN;
+
+        public double SigmaNow {
+            get => sigmaNow;
+            set {
+                sigmaNow = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(SigmaImprovement));
+            }
+        }
+
+        public double SigmaImprovement {
+            get => (SigmaStart - SigmaNow) / SigmaStart * 100;
+        }
 
         public bool EnableABE { get; set; }
         public int ABEDegree { get; set; }
@@ -492,6 +521,18 @@ namespace PixInsightTools.Dockables {
             }
         }
 
+        private bool showNoise;
+
+        public bool ShowNoise {
+            get {
+                return showNoise;
+            }
+            set {
+                showNoise = value;
+                RaisePropertyChanged();
+            }
+        }
+
         private object lockobj = new object();
 
         public FilterTab(string filter, string path, string target) {
@@ -502,6 +543,8 @@ namespace PixInsightTools.Dockables {
             Locked = false;
             EnableABE = false;
             ABEDegree = 2;
+            Noise = new AsyncObservableCollection<Noise>();
+            ShowNoise = PixInsightToolsMediator.Instance.ToolsPlugin.EvaluateNoise;
         }
 
         private BitmapSource stack;
@@ -515,6 +558,33 @@ namespace PixInsightTools.Dockables {
         }
 
         public string PngPath { get; set; }
+
+        public AsyncObservableCollection<Noise> Noise { get; }
+
+        public void AddNoiseEvaluation(double sigma, double percentage) {
+            if(double.IsNaN(sigma) || double.IsNaN(percentage)) {
+                return;
+            }
+            var noise = new Noise(Count, sigma, percentage);
+            if(double.IsNaN(SigmaStart)) {
+                SigmaStart = sigma;
+            }
+
+            SigmaNow = sigma;
+            Noise.Add(noise);
+        }
+    }
+
+    public class Noise {
+        public Noise(int id, double sigma, double percentage) {
+            this.Id = id;
+            this.Sigma = sigma;
+            this.Percentage = percentage;
+        }
+
+        public int Id { get; }
+        public double Sigma { get; }
+        public double Percentage { get; }
     }
 
     public class LiveStackItem {

@@ -3,7 +3,7 @@
     let guid = jsArguments[0].substring(1, jsArguments[0].length - 1);
     let filesToIntegrate = jsArguments[1];
     let outputDir = jsArguments[2];
-    let compress = jsArguments[3];
+    let compress = jsArguments[3].toLowerCase() === 'true';
     let outputFile = jsArguments[4];
 
     console.writeln("guid = " + guid);

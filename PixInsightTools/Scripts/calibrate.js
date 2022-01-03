@@ -5,9 +5,9 @@ function calibrate() {
     let masterDark = jsArguments[3];
     let masterFlat = jsArguments[4];
     let masterBias = jsArguments[5];
-    let compress = jsArguments[6];
+    let compress = jsArguments[6].toLowerCase() === 'true';
     let pedestal = jsArguments[7];
-    let saveAs16Bit = jsArguments[8];
+    let saveAs16Bit = jsArguments[8].toLowerCase() === 'true';
 
     fileToCalibrate = fileToCalibrate.substring(1, fileToCalibrate.length - 1);
     outputDir = outputDir.substring(1, outputDir.length - 1);

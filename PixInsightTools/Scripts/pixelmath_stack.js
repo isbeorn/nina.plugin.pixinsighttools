@@ -4,7 +4,7 @@ function stack() {
     let newFile = jsArguments[1];
     let stackFile = jsArguments[2];
     let outputDir = jsArguments[3];
-    let isOSC = jsArguments[4];
+    let isOSC = jsArguments[4].toLowerCase() === 'true';
 
     console.writeln("guid = " + guid);
     console.writeln("newFile = " + newFile);

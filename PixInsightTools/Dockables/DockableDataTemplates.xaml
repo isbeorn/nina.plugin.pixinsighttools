@@ -7,10 +7,12 @@
     xmlns:converters="clr-namespace:NINA.Core.Utility.Converters;assembly=NINA.Core"
     xmlns:filter="clr-namespace:NINA.Core.Model;assembly=NINA.Core"
     xmlns:local="clr-namespace:PixInsightTools.Dockables"
+    xmlns:mediator="clr-namespace:PixInsightTools"
     xmlns:mini="clr-namespace:NINA.View.Sequencer.MiniSequencer;assembly=NINA.Sequencer"
     xmlns:nina="clr-namespace:NINA.View.Sequencer;assembly=NINA.Sequencer"
     xmlns:ninactrl="clr-namespace:NINACustomControlLibrary;assembly=NINACustomControlLibrary"
     xmlns:ns="clr-namespace:NINA.Core.Locale;assembly=NINA.Core"
+    xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
     xmlns:properties="clr-namespace:PixInsightTools.Properties"
     xmlns:rules="clr-namespace:NINA.Core.Utility.ValidationRules;assembly=NINA.Core"
     xmlns:util="clr-namespace:NINA.Core.Utility;assembly=NINA.Core"
@@ -150,7 +152,18 @@
                                         </StackPanel>
 
                                         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                                            <TextBlock VerticalAlignment="Center" Text="Do ABE?" />
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                Text="Show Noise?"
+                                                Visibility="{Binding ToolsPlugin.EvaluateNoise, Source={x:Static mediator:PixInsightToolsMediator.Instance}, Converter={StaticResource VisibilityConverter}}" />
+                                            <CheckBox
+                                                Margin="5,0,0,0"
+                                                IsChecked="{Binding ShowNoise, Mode=TwoWay}"
+                                                Visibility="{Binding ToolsPlugin.EvaluateNoise, Source={x:Static mediator:PixInsightToolsMediator.Instance}, Converter={StaticResource VisibilityConverter}}" />
+                                            <TextBlock
+                                                Margin="5,0,0,0"
+                                                VerticalAlignment="Center"
+                                                Text="Do ABE?" />
                                             <CheckBox Margin="5,0,0,0" IsChecked="{Binding EnableABE, Mode=TwoWay}" />
                                             <TextBlock
                                                 Margin="5,0,0,0"
@@ -165,6 +178,93 @@
                                     </StackPanel>
                                 </wpfbase:ImageView.ButtonHeaderContent>
                             </wpfbase:ImageView>
+                            <Grid
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Visibility="{Binding ., Converter={StaticResource IsMonoTabToVisibilityConverter}}">
+                                <StackPanel Orientation="Vertical" Visibility="{Binding ShowNoise, Converter={StaticResource VisibilityConverter}}">
+                                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                                        <TextBlock Text="σ Start: " />
+                                        <TextBlock Text="{Binding SigmaStart, StringFormat='{}{0:N4}'}" />
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                                        <TextBlock Text="σ Now: " />
+                                        <TextBlock Text="{Binding SigmaNow, StringFormat='{}{0:N4}'}" />
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                                        <TextBlock Text="Δ : " />
+                                        <TextBlock Text="{Binding SigmaImprovement, StringFormat='{}{0:N2}%'}" />
+                                    </StackPanel>
+
+                                    <oxy:Plot
+                                        MinWidth="200"
+                                        MinHeight="100"
+                                        VerticalAlignment="Stretch"
+                                        Background="{StaticResource BackgroundBrush}"
+                                        PlotAreaBackground="{StaticResource BackgroundBrush}"
+                                        PlotAreaBorderColor="{Binding Path=Color, Source={StaticResource BorderBrush}}">
+                                        <oxy:Plot.TrackerDefinitions>
+                                            <oxy:TrackerDefinition TrackerKey="NoiseProperties">
+                                                <oxy:TrackerDefinition.TrackerTemplate>
+                                                    <ControlTemplate>
+                                                        <oxy:TrackerControl
+                                                            BorderBrush="{StaticResource BorderBrush}"
+                                                            BorderThickness="1"
+                                                            LineExtents="{Binding PlotModel.PlotArea}"
+                                                            Position="{Binding Position}">
+                                                            <StackPanel Orientation="Vertical">
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <TextBlock Text="{Binding Item.Sigma, StringFormat='{}{0:N4}'}" />
+                                                                    <TextBlock Text=" σ" />
+                                                                </StackPanel>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <TextBlock Text="{Binding Item.Percentage, StringFormat='{}{0:N4}'}" />
+                                                                    <TextBlock Text=" %" />
+                                                                </StackPanel>
+                                                            </StackPanel>
+
+                                                        </oxy:TrackerControl>
+                                                    </ControlTemplate>
+                                                </oxy:TrackerDefinition.TrackerTemplate>
+                                            </oxy:TrackerDefinition>
+                                        </oxy:Plot.TrackerDefinitions>
+
+                                        <oxy:Plot.Axes>
+                                            <oxy:LinearAxis
+                                                AxislineColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}}"
+                                                IsAxisVisible="False"
+                                                IsPanEnabled="False"
+                                                IsZoomEnabled="False"
+                                                MajorGridlineColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}, Converter={StaticResource SetAlphaToColorConverter}, ConverterParameter=60}"
+                                                MajorGridlineStyle="LongDash"
+                                                Maximum="100"
+                                                Minimum="0"
+                                                Position="Left"
+                                                TextColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}}"
+                                                TicklineColor="{Binding Path=Color, Source={StaticResource SecondaryBrush}}" />
+                                            <oxy:LinearAxis
+                                                AxislineColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}}"
+                                                IsAxisVisible="False"
+                                                IsPanEnabled="False"
+                                                IsZoomEnabled="False"
+                                                Position="Bottom"
+                                                TextColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}}"
+                                                TicklineColor="{Binding Path=Color, Source={StaticResource SecondaryBrush}}" />
+                                        </oxy:Plot.Axes>
+                                        <oxy:Plot.Series>
+                                            <oxy:LineSeries
+                                                DataFieldX="Id"
+                                                DataFieldY="Percentage"
+                                                ItemsSource="{Binding Noise}"
+                                                MarkerFill="{Binding Path=Color, Source={StaticResource PrimaryBrush}}"
+                                                MarkerType="Circle"
+                                                TrackerKey="NoiseProperties"
+                                                Color="{Binding Path=Color, Source={StaticResource SecondaryBrush}}" />
+                                        </oxy:Plot.Series>
+                                    </oxy:Plot>
+
+                                </StackPanel>
+                            </Grid>
                         </Grid>
                     </DataTemplate>
                 </TabControl.ContentTemplate>

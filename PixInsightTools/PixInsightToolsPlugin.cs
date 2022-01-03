@@ -268,6 +268,14 @@ namespace PixInsightTools {
             }
         }
 
+        public bool EvaluateNoise {
+            get => pluginSettings.GetValueBoolean(nameof(EvaluateNoise), true);
+            set {
+                pluginSettings.SetValueBoolean(nameof(EvaluateNoise), value);
+                RaisePropertyChanged();
+            }
+        }
+
         public string PixInsightLocation {
             get {
                 return Properties.Settings.Default.PixInsightLocation;

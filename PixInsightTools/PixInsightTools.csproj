@@ -273,6 +273,7 @@
     <Compile Include="Dockables\IsMonoTabToVisibilityConverter.cs" />
     <Compile Include="Dockables\PixInsightDebayer.cs" />
     <Compile Include="Dockables\PixInsightFlatIntegration.cs" />
+    <Compile Include="Dockables\PixInsightNoiseEvaluation.cs" />
     <Compile Include="Dockables\PixInsightPostProcessing.cs" />
     <Compile Include="Dockables\PixInsightAlign.cs" />
     <Compile Include="Dockables\PixInsightCalibration.cs" />
@@ -316,6 +317,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\flat_integration.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\noise_evaluation.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\postprocess_stack.js">
@@ -387,8 +391,17 @@
     <PostBuildEvent>if $(ConfigurationName) == Release (
     echo  "Trying to sign $(TargetPath)"
     signtool sign /t http://timestamp.digicert.com /v /a /fd SHA256 $(TargetPath)
-		
-	
+
+signtool sign /t http://timestamp.digicert.com /v /a /fd SHA256 $(TargetDir)Scripts\startup.js
+signtool sign /t http://timestamp.digicert.com /v /a /fd SHA256 $(TargetDir)Scripts\calibrate.js
+signtool sign /t http://timestamp.digicert.com /v /a /fd SHA256 $(TargetDir)Scripts\alignment.js
+signtool sign /t http://timestamp.digicert.com /v /a /fd SHA256 $(TargetDir)Scripts\pixelmath_stack.js
+signtool sign /t http://timestamp.digicert.com /v /a /fd SHA256 $(TargetDir)Scripts\resample.js
+signtool sign /t http://timestamp.digicert.com /v /a /fd SHA256 $(TargetDir)Scripts\postprocess_stack.js
+signtool sign /t http://timestamp.digicert.com /v /a /fd SHA256 $(TargetDir)Scripts\colorcombine_stack.js
+signtool sign /t http://timestamp.digicert.com /v /a /fd SHA256 $(TargetDir)Scripts\flat_integration.js
+signtool sign /t http://timestamp.digicert.com /v /a /fd SHA256 $(TargetDir)Scripts\debayer.js
+signtool sign /t http://timestamp.digicert.com /v /a /fd SHA256 $(TargetDir)Scripts\noise_evaluation.js
 )
 
 if not exist "%25localappdata%25\NINA\Plugins" (
@@ -417,7 +430,8 @@ copy "$(TargetDir)Scripts\resample.js" "%25localappdata%25\NINA\Plugins\PixInsig
 copy "$(TargetDir)Scripts\postprocess_stack.js" "%25localappdata%25\NINA\Plugins\PixInsight Tools\Scripts\postprocess_stack.js" /Y
 copy "$(TargetDir)Scripts\colorcombine_stack.js" "%25localappdata%25\NINA\Plugins\PixInsight Tools\Scripts\colorcombine_stack.js" /Y
 copy "$(TargetDir)Scripts\flat_integration.js" "%25localappdata%25\NINA\Plugins\PixInsight Tools\Scripts\flat_integration.js" /Y
-copy "$(TargetDir)Scripts\debayer.js" "%25localappdata%25\NINA\Plugins\PixInsight Tools\Scripts\debayer.js" /Y</PostBuildEvent>
+copy "$(TargetDir)Scripts\debayer.js" "%25localappdata%25\NINA\Plugins\PixInsight Tools\Scripts\debayer.js" /Y
+copy "$(TargetDir)Scripts\noise_evaluation.js" "%25localappdata%25\NINA\Plugins\PixInsight Tools\Scripts\noise_evaluation.js" /Y</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Google.Protobuf.Tools.3.18.1\build\Google.Protobuf.Tools.targets" Condition="Exists('..\packages\Google.Protobuf.Tools.3.18.1\build\Google.Protobuf.Tools.targets')" />
   <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
