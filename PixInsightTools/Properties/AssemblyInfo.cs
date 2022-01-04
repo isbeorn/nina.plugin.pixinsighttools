@@ -26,8 +26,8 @@ using System.Runtime.InteropServices;
 
 //The assembly versioning
 //Should be incremented for each new release build of a plugin
-[assembly: AssemblyVersion("0.1.3.0")]
-[assembly: AssemblyFileVersion("0.1.3.0")]
+[assembly: AssemblyVersion("0.1.4.0")]
+[assembly: AssemblyFileVersion("0.1.4.0")]
 
 //The minimum Version of N.I.N.A. that this plugin is compatible with
 [assembly: AssemblyMetadata("MinimumApplicationVersion", "2.0.0.2020")]
@@ -39,9 +39,9 @@ using System.Runtime.InteropServices;
 //The url to the license
 [assembly: AssemblyMetadata("LicenseURL", "https://www.mozilla.org/en-US/MPL/2.0/")]
 //The repository where your pluggin is hosted
-[assembly: AssemblyMetadata("Repository", "https://bitbucket.org/Isbeorn/nina.plugins/src/master/NINA.Plugin.Notification/NINA.Plugins.PixInsightTools/")]
+[assembly: AssemblyMetadata("Repository", "https://bitbucket.org/Isbeorn/nina.plugin.pixinsighttools/src/master/")]
 
-[assembly: AssemblyMetadata("ChangelogURL", "https://bitbucket.org/Isbeorn/nina.plugins/src/master/NINA.Plugin.Notification/NINA.Plugins.PixInsightTools/Changelog.md")]
+[assembly: AssemblyMetadata("ChangelogURL", "https://bitbucket.org/Isbeorn/nina.plugin.pixinsighttools/src/master/PixInsightTools/Changelog.md")]
 
 //Common tags that quickly describe your plugin
 [assembly: AssemblyMetadata("Tags", "PixInsight,Sequencer")]
@@ -52,7 +52,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("ScreenshotURL", "https://bitbucket.org/Isbeorn/nina.plugin.pixinsighttools/downloads/LiveStackTab.png")]
 //An additional example screenshot of your plugin in action
 [assembly: AssemblyMetadata("AltScreenshotURL", "")]
-[assembly: AssemblyMetadata("LongDescription", @"This plugin provides instructions and capabilities to interact with PixInsight and use the output to display a live stack insde N.I.N.A.
+[assembly: AssemblyMetadata("LongDescription", @"This plugin provides instructions and capabilities to interact with PixInsight and use the output to display a live stack inside N.I.N.A.
 
 ## **This plugin is provided as is. It is tested with various scenarios in mind, however for some use cases it might not work.**
 **Use this plugin only on an imaging rig that has enough processing power to interact with PixInsight in parallel to imaging!**
@@ -64,7 +64,7 @@ using System.Runtime.InteropServices;
 * Set up your PixInsight location
 * Set a working directory - this folder will be used to store calibration files, temporary files as well as the live stack files
 * Adjust the remaining settings on the plugin page to your needs
-* Add BIAS or DARK master files (optional)
+* Add BIAS, DARK or FLAT master files (optional)
 
 ## Sequencer Instructions
 
@@ -82,7 +82,8 @@ using System.Runtime.InteropServices;
 
 ## Live Stacking Panel
 * Expander options
-    + Inside the expander you can manually add flat masters, or alternatively automatically let them be filled by the **Stack Flats** instruction
+    + Inside the expander you can manually add single session flat masters, or alternatively automatically let them be filled by the **Stack Flats** instruction
+    + *Note* - Multi Session Flat Masters are not shown here, but will be used when you have set them in the options page
     + Furthermore a color combination can be specified when there are at least two different filters for one target available. The color stack will be created after the next frame is stacked.
 
 * Start live stack

@@ -86,6 +86,7 @@ namespace PixInsightTools {
                         
             DarkLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(DarkLibrary), "")));                        
             BiasLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(BiasLibrary), "")));
+            FlatLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(FlatLibrary), "")));
 
             if (!Directory.Exists(Properties.Settings.Default.WorkingDirectory)) {
                 Properties.Settings.Default.WorkingDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "N.I.N.A", "LiveStack");
@@ -96,12 +97,14 @@ namespace PixInsightTools {
             OpenWorkingFolderDiagCommand = new GalaSoft.MvvmLight.Command.RelayCommand(OpenWorkingFolderDiag);
             DeleteDarkMasterCommand = new GalaSoft.MvvmLight.Command.RelayCommand<CalibrationFrame>(DeleteDarkMaster);
             DeleteBiasMasterCommand = new GalaSoft.MvvmLight.Command.RelayCommand<CalibrationFrame>(DeleteBiasMaster);
+            DeleteFlatMasterCommand = new GalaSoft.MvvmLight.Command.RelayCommand<CalibrationFrame>(DeleteFlatMaster);
             profileService.ProfileChanged += ProfileService_ProfileChanged;
         }
 
         private void ProfileService_ProfileChanged(object sender, EventArgs e) {
             DarkLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(DarkLibrary), "")));
             BiasLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(BiasLibrary), "")));
+            FlatLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(FlatLibrary), "")));
             RaisePropertyChanged(nameof(KeepCalibratedFiles));
             RaisePropertyChanged(nameof(UseBiasForLights));
             RaisePropertyChanged(nameof(CompressCalibratedFiles));
@@ -123,6 +126,11 @@ namespace PixInsightTools {
         private void DeleteDarkMaster(CalibrationFrame c) {
             DarkLibrary.Remove(c);
             pluginSettings.SetValueString(nameof(DarkLibrary), FromListToString(DarkLibrary));
+        }
+
+        private void DeleteFlatMaster(CalibrationFrame c) {
+            FlatLibrary.Remove(c);
+            pluginSettings.SetValueString(nameof(FlatLibrary), FromListToString(FlatLibrary));
         }
 
         private void OpenWorkingFolderDiag() {
@@ -214,6 +222,9 @@ namespace PixInsightTools {
                     } else if(frame.Type == CalibrationFrameType.DARK) {
                         DarkLibrary.Add(frame);
                         pluginSettings.SetValueString(nameof(DarkLibrary), FromListToString(DarkLibrary));
+                    } else if(frame.Type == CalibrationFrameType.FLAT) {
+                        FlatLibrary.Add(frame);
+                        pluginSettings.SetValueString(nameof(FlatLibrary), FromListToString(FlatLibrary));
                     }
                 }
             }
@@ -320,12 +331,22 @@ namespace PixInsightTools {
         public ICommand OpenWorkingFolderDiagCommand  { get; }
         public ICommand DeleteDarkMasterCommand { get; }
         public ICommand DeleteBiasMasterCommand { get; }
+        public ICommand DeleteFlatMasterCommand { get; }
 
         private AsyncObservableCollection<CalibrationFrame> darkLibrary;
         public AsyncObservableCollection<CalibrationFrame> DarkLibrary {
             get => darkLibrary;
             set {
                 darkLibrary = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private AsyncObservableCollection<CalibrationFrame> flatLibrary;
+        public AsyncObservableCollection<CalibrationFrame> FlatLibrary {
+            get => flatLibrary;
+            set {
+                flatLibrary = value;
                 RaisePropertyChanged();
             }
         }

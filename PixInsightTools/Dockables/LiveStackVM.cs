@@ -416,9 +416,12 @@ namespace PixInsightTools.Dockables {
         }
 
         private CalibrationFrame GetFlatMaster(LiveStackItem item) {
+            var filter = string.IsNullOrWhiteSpace(item.Filter) ? NOFILTER : item.Filter;
             if (FlatLibrary?.Count > 0) {
-                var filter = string.IsNullOrWhiteSpace(item.Filter) ? NOFILTER : item.Filter;
                 return FlatLibrary.FirstOrDefault(x => x.Filter == filter && x.Width == item.Width && x.Height == item.Height);
+            }
+            if(CrossSessionFlatLibrary?.Count > 0) {
+                return CrossSessionFlatLibrary.FirstOrDefault(x => x.Filter == filter && x.Width == item.Width && x.Height == item.Height);
             }
             return null;
         }
@@ -438,6 +441,7 @@ namespace PixInsightTools.Dockables {
         }
 
         public IList<CalibrationFrame> FlatLibrary { get; } = new AsyncObservableCollection<CalibrationFrame>();
+        public IList<CalibrationFrame> CrossSessionFlatLibrary { get => PixInsightToolsMediator.Instance.ToolsPlugin.FlatLibrary; }
         public IList<CalibrationFrame> DarkLibrary { get => PixInsightToolsMediator.Instance.ToolsPlugin.DarkLibrary; }
         public IList<CalibrationFrame> BiasLibrary { get => PixInsightToolsMediator.Instance.ToolsPlugin.BiasLibrary; }
 

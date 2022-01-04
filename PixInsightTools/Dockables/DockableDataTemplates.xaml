@@ -34,7 +34,7 @@
                 </Grid.ColumnDefinitions>
                 <Expander
                     VerticalAlignment="Center"
-                    Header="Flat Master Session Library"
+                    Header="Single Session Flat Library"
                     IsExpanded="{Binding IsExpanded}">
                     <Grid>
                         <Grid.RowDefinitions>
