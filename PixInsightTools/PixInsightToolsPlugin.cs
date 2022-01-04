@@ -24,6 +24,7 @@ using PixInsightTools.Dockables;
 using NINA.Image.Interfaces;
 using NINA.Profile.Interfaces;
 using NINA.Profile;
+using PixInsightTools.Prompts;
 
 namespace PixInsightTools {
     public class PixInsightToolsMediator {

@@ -7,6 +7,7 @@
     xmlns:model="clr-namespace:PixInsightTools.Model"
     xmlns:ninactrl="clr-namespace:NINACustomControlLibrary;assembly=NINACustomControlLibrary"
     xmlns:ns="clr-namespace:NINA.Core.Locale;assembly=NINA.Core"
+    xmlns:prompts="clr-namespace:PixInsightTools.Prompts"
     xmlns:properties="clr-namespace:PixInsightTools.Properties"
     xmlns:rules="clr-namespace:NINA.Core.Utility.ValidationRules;assembly=NINA.Core"
     xmlns:s="clr-namespace:System;assembly=mscorlib"
@@ -478,7 +479,7 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type model:CalibrationFramePrompt}">
+    <DataTemplate DataType="{x:Type prompts:CalibrationFramePrompt}">
         <DataTemplate.Resources>
             <ObjectDataProvider
                 x:Key="dataFromEnum"

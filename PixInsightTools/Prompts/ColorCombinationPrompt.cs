@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 
-namespace PixInsightTools.Dockables {
+namespace PixInsightTools.Prompts {
     internal class ColorCombinationPrompt : BaseINPC {
         public IList<FilterTab> FilterTabs { get; private set; }
         private IList<FilterTab> allTabs;

@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using GalaSoft.MvvmLight.Command;
+using Microsoft.Win32;
 using NINA.Core.Enum;
 using NINA.Core.Model;
 using NINA.Core.Utility;
@@ -14,6 +15,8 @@ using NINA.WPF.Base.Interfaces.Mediator;
 using NINA.WPF.Base.ViewModel;
 using Nito.AsyncEx;
 using PixInsightTools.Model;
+using PixInsightTools.Model.QualityGate;
+using PixInsightTools.Prompts;
 using PixInsightTools.Scripts;
 using PixInsightTools.Utility;
 using System;
@@ -62,6 +65,7 @@ namespace PixInsightTools.Dockables {
 
             queue = new AsyncProducerConsumerQueue<LiveStackItem>(1000);
             FilterTabs = new AsyncObservableCollection<FilterTab>();
+            QualityGates = new AsyncObservableCollection<IQualityGate>();
 
             StartLiveStackCommand = new AsyncCommand<bool>(async () => { await workManager.ExecuteOnceAsync(DoWork); return true; });
             CancelLiveStackCommand = new GalaSoft.MvvmLight.Command.RelayCommand(CancelLiveStack);
@@ -69,7 +73,24 @@ namespace PixInsightTools.Dockables {
             DeleteFlatMasterCommand = new GalaSoft.MvvmLight.Command.RelayCommand<CalibrationFrame>(DeleteFlatMaster);
             RemoveTabCommand = new AsyncCommand<bool>((object o) => RemoveTab(o), (object o) => !SelectedTab?.Locked ?? false);
             AddColorCombinationCommand = new AsyncCommand<bool>(AddColorCombination, (object o) => FilterTabs?.Count > 1);
+            AddQualityGateCommand = new AsyncCommand<bool>(AddQualityGate);
+            DeleteQualityGateCommand = new GalaSoft.MvvmLight.Command.RelayCommand<IQualityGate>(DeleteQualityGate);
 
+        }
+
+        private void DeleteQualityGate(IQualityGate obj) {
+            QualityGates.Remove(obj);
+        }
+
+        private async Task<bool> AddQualityGate() {
+            var service = windowServiceFactory.Create();
+            var prompt = new QualityGatePrompt();
+            await service.ShowDialog(prompt, "Quality Gate Addition", System.Windows.ResizeMode.NoResize, System.Windows.WindowStyle.ToolWindow);
+
+            if (prompt.Continue && prompt.SelectedGate != null) {
+                QualityGates.Add(prompt.SelectedGate);
+            }
+            return prompt.Continue;
         }
 
         private async Task<bool> AddColorCombination(object arg) {
@@ -170,11 +191,25 @@ namespace PixInsightTools.Dockables {
         public ICommand DeleteFlatMasterCommand { get; }
         public ICommand RemoveTabCommand { get; }
         public IAsyncCommand AddColorCombinationCommand { get; }
+        public ICommand AddQualityGateCommand { get; }
+        public ICommand DeleteQualityGateCommand { get; }
 
         private async void ImageSaveMediator_ImageSaved(object sender, ImageSavedEventArgs e) {
             try {
                 if (e.MetaData.Image.ImageType == NINA.Equipment.Model.CaptureSequence.ImageTypes.LIGHT || e.MetaData.Image.ImageType == NINA.Equipment.Model.CaptureSequence.ImageTypes.SNAPSHOT) {
-                    await queue.EnqueueAsync(new LiveStackItem(e.PathToImage.LocalPath, e.MetaData.Target.Name, e.Filter, e.MetaData.Image.ExposureTime, e.MetaData.Camera.Gain, e.MetaData.Camera.Offset, e.Image.PixelWidth, e.Image.PixelHeight, e.IsBayered, e.MetaData.Camera.BayerPattern));
+                    await queue.EnqueueAsync(new LiveStackItem(e.PathToImage.LocalPath,
+                                                               e.MetaData.Target.Name,
+                                                               e.Filter,
+                                                               e.MetaData.Image.ExposureTime,
+                                                               e.MetaData.Camera.Gain,
+                                                               e.MetaData.Camera.Offset,
+                                                               e.Image.PixelWidth,
+                                                               e.Image.PixelHeight,
+                                                               e.IsBayered,
+                                                               e.MetaData.Camera.BayerPattern,
+                                                               e.MetaData,
+                                                               e.Statistics,
+                                                               e.StarDetectionAnalysis));
                 }
             } catch (Exception) {
             }
@@ -240,141 +275,148 @@ namespace PixInsightTools.Dockables {
 
                             var item = await queue.DequeueAsync(workerCTS.Token);
 
-                            // Just in case it crashed or was accidentally closed
-                            await new PixInsightStartup(workingDir, slot).Run(progress, workerCTS.Token);
+                            var failedGates = qualityGates.Where(x => !x.Passes(item));
+                            if (failedGates.Count() > 0) {
+                                var failedGatesInfo = "Live Stack - Image ignored as it does not meet quality gate critera." + Environment.NewLine + string.Join(Environment.NewLine, failedGates.Select(x => $"{x.Name}: {x.Value}"));
+                                Logger.Warning(failedGatesInfo);
+                                Notification.ShowWarning(failedGatesInfo);
+                            } else { 
+                                // Just in case it crashed or was accidentally closed
+                                await new PixInsightStartup(workingDir, slot).Run(progress, workerCTS.Token);
 
-                            var target = string.IsNullOrWhiteSpace(item.Target) ? FilterTab.NOTARGET : item.Target;
-                            var filter = string.IsNullOrWhiteSpace(item.Filter) ? FilterTab.NOFILTER : item.Filter;
+                                var target = string.IsNullOrWhiteSpace(item.Target) ? FilterTab.NOTARGET : item.Target;
+                                var filter = string.IsNullOrWhiteSpace(item.Filter) ? FilterTab.NOFILTER : item.Filter;
 
-                            tab = GetFilterTab(target, filter);
+                                tab = GetFilterTab(target, filter);
 
-                            CalibrationFrame flat = GetFlatMaster(item);
-                            CalibrationFrame dark = GetDarkMaster(item);
-                            CalibrationFrame bias = null;
-                            if (dark == null) {
-                                bias = GetBiasMaster(item);
-                            }
-
-                            bool calibrated = false;
-                            var referenceFile = item.Path;
-                            var calibratedFile = string.Empty;
-                            var resampledFile = string.Empty;
-                            var debayeredFile = string.Empty;
-                            var alignedFile = string.Empty;
-                            if (flat != null || dark != null || bias != null) {
-                                var compress = false;
-                                if (PixInsightToolsMediator.Instance.ToolsPlugin.KeepCalibratedFiles && PixInsightToolsMediator.Instance.ToolsPlugin.CompressCalibratedFiles) {
-                                    compress = true;
+                                CalibrationFrame flat = GetFlatMaster(item);
+                                CalibrationFrame dark = GetDarkMaster(item);
+                                CalibrationFrame bias = null;
+                                if (dark == null) {
+                                    bias = GetBiasMaster(item);
                                 }
 
-                                var pedestal = PixInsightToolsMediator.Instance.ToolsPlugin.Pedestal;
-                                var saveAs16Bit = PixInsightToolsMediator.Instance.ToolsPlugin.SaveAs16Bit;
-                                calibratedFile = await new PixInsightCalibration(workingDir, slot, compress, pedestal, saveAs16Bit, flat?.Path ?? "", dark?.Path ?? "", bias?.Path ?? "").Run(item.Path, progress, workerCTS.Token);
-
-                                if (PixInsightToolsMediator.Instance.ToolsPlugin.KeepCalibratedFiles) {
-                                    var destinationFolder = Path.Combine(workingDir, "calibrated", target, filter);
-                                    if (!Directory.Exists(destinationFolder)) {
-                                        Directory.CreateDirectory(destinationFolder);
+                                bool calibrated = false;
+                                var referenceFile = item.Path;
+                                var calibratedFile = string.Empty;
+                                var resampledFile = string.Empty;
+                                var debayeredFile = string.Empty;
+                                var alignedFile = string.Empty;
+                                if (flat != null || dark != null || bias != null) {
+                                    var compress = false;
+                                    if (PixInsightToolsMediator.Instance.ToolsPlugin.KeepCalibratedFiles && PixInsightToolsMediator.Instance.ToolsPlugin.CompressCalibratedFiles) {
+                                        compress = true;
                                     }
 
-                                    var destinationFileName = Path.Combine(destinationFolder, Path.GetFileName(calibratedFile));
-                                    File.Move(calibratedFile, destinationFileName);
-                                    calibratedFile = destinationFileName;
+                                    var pedestal = PixInsightToolsMediator.Instance.ToolsPlugin.Pedestal;
+                                    var saveAs16Bit = PixInsightToolsMediator.Instance.ToolsPlugin.SaveAs16Bit;
+                                    calibratedFile = await new PixInsightCalibration(workingDir, slot, compress, pedestal, saveAs16Bit, flat?.Path ?? "", dark?.Path ?? "", bias?.Path ?? "").Run(item.Path, progress, workerCTS.Token);
+
+                                    if (PixInsightToolsMediator.Instance.ToolsPlugin.KeepCalibratedFiles) {
+                                        var destinationFolder = Path.Combine(workingDir, "calibrated", target, filter);
+                                        if (!Directory.Exists(destinationFolder)) {
+                                            Directory.CreateDirectory(destinationFolder);
+                                        }
+
+                                        var destinationFileName = Path.Combine(destinationFolder, Path.GetFileName(calibratedFile));
+                                        File.Move(calibratedFile, destinationFileName);
+                                        calibratedFile = destinationFileName;
+                                    }
+
+                                    referenceFile = calibratedFile;
+                                    calibrated = true;
                                 }
 
-                                referenceFile = calibratedFile;
-                                calibrated = true;
-                            }
-
-                            if (item.IsBayered) {
-                                string pattern = item.BayerPattern.ToString();
-                                if (item.BayerPattern == BayerPatternEnum.Auto) {
-                                    pattern = BayerPatternEnum.RGGB.ToString();
+                                if (item.IsBayered) {
+                                    string pattern = item.BayerPattern.ToString();
+                                    if (item.BayerPattern == BayerPatternEnum.Auto) {
+                                        pattern = BayerPatternEnum.RGGB.ToString();
+                                    }
+                                    debayeredFile = await new PixInsightDebayer(workingDir, slot).Run(referenceFile, item.BayerPattern.ToString(), progress, workerCTS.Token);
+                                    referenceFile = debayeredFile;
                                 }
-                                debayeredFile = await new PixInsightDebayer(workingDir, slot).Run(referenceFile, item.BayerPattern.ToString(), progress, workerCTS.Token);
-                                referenceFile = debayeredFile;
-                            }
 
-                            if (PixInsightToolsMediator.Instance.ToolsPlugin.ResampleAmount > 1) {
-                                resampledFile = await new PixInsightResample(referenceFile, PixInsightToolsMediator.Instance.ToolsPlugin.ResampleAmount, workingDir, slot).Run(progress, workerCTS.Token);
-                                referenceFile = resampledFile;
-                            }
+                                if (PixInsightToolsMediator.Instance.ToolsPlugin.ResampleAmount > 1) {
+                                    resampledFile = await new PixInsightResample(referenceFile, PixInsightToolsMediator.Instance.ToolsPlugin.ResampleAmount, workingDir, slot).Run(progress, workerCTS.Token);
+                                    referenceFile = resampledFile;
+                                }
 
-                            var stackPath = string.Empty;
-                            var count = tab?.Count ?? 1;
-                            if (!(tab == null)) {
-                                stackPath = tab.Path;
-                                alignedFile = await new PixInsightAlign(referenceFile, stackPath, workingDir, slot).Run(progress, workerCTS.Token);
+                                var stackPath = string.Empty;
+                                var count = tab?.Count ?? 1;
+                                if (!(tab == null)) {
+                                    stackPath = tab.Path;
+                                    alignedFile = await new PixInsightAlign(referenceFile, stackPath, workingDir, slot).Run(progress, workerCTS.Token);
 
-                                count = await new PixInsightStack(alignedFile, stackPath, workingDir, slot).Run(item.IsBayered, progress, workerCTS.Token);
-                            } else {
-                                stackPath = Path.Combine(workingDir, GetStackName(target, filter));
-
-                                // Delete stack if it doesn't have a specific target and copy the reference file to be the new stack. If a specific target is present and a stack exists already, continue on that stack instead
-                                if (!File.Exists(stackPath) || target == FilterTab.NOTARGET) {
-                                    await TryDeleteFile(stackPath);
-                                    File.Copy(referenceFile, Path.Combine(workingDir, GetStackName(target, filter)), true);
-                                    Logger.Info($"Creating new stack {stackPath}");
+                                    count = await new PixInsightStack(alignedFile, stackPath, workingDir, slot).Run(item.IsBayered, progress, workerCTS.Token);
                                 } else {
-                                    Logger.Info($"Continuing on existing stack {stackPath}");
+                                    stackPath = Path.Combine(workingDir, GetStackName(target, filter));
+
+                                    // Delete stack if it doesn't have a specific target and copy the reference file to be the new stack. If a specific target is present and a stack exists already, continue on that stack instead
+                                    if (!File.Exists(stackPath) || target == FilterTab.NOTARGET) {
+                                        await TryDeleteFile(stackPath);
+                                        File.Copy(referenceFile, Path.Combine(workingDir, GetStackName(target, filter)), true);
+                                        Logger.Info($"Creating new stack {stackPath}");
+                                    } else {
+                                        Logger.Info($"Continuing on existing stack {stackPath}");
+                                    }
+
+                                    tab = new FilterTab(filter, stackPath, target);
+                                    FilterTabs.Add(tab);
                                 }
 
-                                tab = new FilterTab(filter, stackPath, target);
-                                FilterTabs.Add(tab);
-                            }
-
-                            if (PixInsightToolsMediator.Instance.ToolsPlugin.EvaluateNoise) {
-                               var (noiseSigma, noisePercentage)= await new PixInsightNoiseEvaluation(stackPath, item.IsBayered, workingDir, slot).Run(progress, workerCTS.Token);
-                                tab.AddNoiseEvaluation(noiseSigma, noisePercentage);
-                            }
-
-                            if (item.IsBayered) {
-                                await TryDeleteFile(debayeredFile);
-                            }
-
-                            if (calibrated && !PixInsightToolsMediator.Instance.ToolsPlugin.KeepCalibratedFiles) {
-                                await TryDeleteFile(calibratedFile);
-                            }
-
-                            if (PixInsightToolsMediator.Instance.ToolsPlugin.ResampleAmount > 1) {
-                                await TryDeleteFile(resampledFile);
-                            }
-
-                            if (!string.IsNullOrEmpty(alignedFile)) {
-                                await TryDeleteFile(alignedFile);
-                            }
-
-                            var imagePath = await new PixInsightPostProcessing(stackPath, tab.EnableABE ? tab.ABEDegree : 0, workingDir, slot).Run(progress, workerCTS.Token);
-
-                            applicationStatusMediator.StatusUpdate(new ApplicationStatus() { Source = "Live Stack", Status = $"Reloading image {target} - {filter} Frame" });
-
-                            var decoder = new PngBitmapDecoder(new Uri(imagePath), BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
-                            tab.PngPath = imagePath;
-                            tab.Stack = decoder.Frames[0];
-                            tab.Stack.Freeze();
-
-                            if (FilterTabs?.Count > 2) {
-                                var colorTab = GetFilterTab(target, ColorTab.RGB);
-                                if (colorTab != null && colorTab is ColorTab c) {
-                                    c.Locked = true;
-                                    var colorImage = await new PixInsightColorCombine(c.RedPath, c.GreenPath, c.BluePath, target, workingDir, slot).Run(progress, workerCTS.Token);
-
-                                    var decoder2 = new PngBitmapDecoder(new Uri(colorImage), BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
-                                    c.Stack = decoder2.Frames[0];
-                                    c.Stack.Freeze();
-                                    c.Locked = false;
+                                if (PixInsightToolsMediator.Instance.ToolsPlugin.EvaluateNoise) {
+                                    var (noiseSigma, noisePercentage) = await new PixInsightNoiseEvaluation(stackPath, item.IsBayered, workingDir, slot).Run(progress, workerCTS.Token);
+                                    tab.AddNoiseEvaluation(noiseSigma, noisePercentage);
                                 }
-                            }
 
-                            if (count > 0) {
-                                tab.Count = count;
-                            }
+                                if (item.IsBayered) {
+                                    await TryDeleteFile(debayeredFile);
+                                }
 
-                            if (SelectedTab == null) {
-                                SelectedTab = tab;
-                            }
+                                if (calibrated && !PixInsightToolsMediator.Instance.ToolsPlugin.KeepCalibratedFiles) {
+                                    await TryDeleteFile(calibratedFile);
+                                }
 
-                            tab.Locked = false;
+                                if (PixInsightToolsMediator.Instance.ToolsPlugin.ResampleAmount > 1) {
+                                    await TryDeleteFile(resampledFile);
+                                }
+
+                                if (!string.IsNullOrEmpty(alignedFile)) {
+                                    await TryDeleteFile(alignedFile);
+                                }
+
+                                var imagePath = await new PixInsightPostProcessing(stackPath, tab.EnableABE ? tab.ABEDegree : 0, workingDir, slot).Run(progress, workerCTS.Token);
+
+                                applicationStatusMediator.StatusUpdate(new ApplicationStatus() { Source = "Live Stack", Status = $"Reloading image {target} - {filter} Frame" });
+
+                                var decoder = new PngBitmapDecoder(new Uri(imagePath), BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
+                                tab.PngPath = imagePath;
+                                tab.Stack = decoder.Frames[0];
+                                tab.Stack.Freeze();
+
+                                if (FilterTabs?.Count > 2) {
+                                    var colorTab = GetFilterTab(target, ColorTab.RGB);
+                                    if (colorTab != null && colorTab is ColorTab c) {
+                                        c.Locked = true;
+                                        var colorImage = await new PixInsightColorCombine(c.RedPath, c.GreenPath, c.BluePath, target, workingDir, slot).Run(progress, workerCTS.Token);
+
+                                        var decoder2 = new PngBitmapDecoder(new Uri(colorImage), BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
+                                        c.Stack = decoder2.Frames[0];
+                                        c.Stack.Freeze();
+                                        c.Locked = false;
+                                    }
+                                }
+
+                                if (count > 0) {
+                                    tab.Count = count;
+                                }
+
+                                if (SelectedTab == null) {
+                                    SelectedTab = tab;
+                                }
+
+                                tab.Locked = false;
+                            }
                         } catch (OperationCanceledException) {
                         } catch (Exception ex) {
                             Logger.Error(ex);
@@ -413,12 +455,21 @@ namespace PixInsightTools.Dockables {
             }
         }
 
+        private AsyncObservableCollection<IQualityGate> qualityGates;
+        public AsyncObservableCollection<IQualityGate> QualityGates {
+            get => qualityGates;
+            set {
+                qualityGates = value;
+                RaisePropertyChanged();
+            }
+        }
+
         private CalibrationFrame GetFlatMaster(LiveStackItem item) {
             var filter = string.IsNullOrWhiteSpace(item.Filter) ? FilterTab.NOFILTER : item.Filter;
             if (FlatLibrary?.Count > 0) {
                 return FlatLibrary.FirstOrDefault(x => x.Filter == filter && x.Width == item.Width && x.Height == item.Height);
             }
-            if(CrossSessionFlatLibrary?.Count > 0) {
+            if (CrossSessionFlatLibrary?.Count > 0) {
                 return CrossSessionFlatLibrary.FirstOrDefault(x => x.Filter == filter && x.Width == item.Width && x.Height == item.Height);
             }
             return null;

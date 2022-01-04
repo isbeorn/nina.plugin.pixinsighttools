@@ -266,7 +266,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dockables\ColorCombinationPrompt.cs" />
+    <Compile Include="Prompts\ColorCombinationPrompt.cs" />
+    <Compile Include="Prompts\CalibrationFramePrompt.cs" />
+    <Compile Include="Model\QualityGate\HFRAbsoluteGate.cs" />
+    <Compile Include="Model\QualityGate\IQualityGate.cs" />
+    <Compile Include="Model\QualityGate\RMSAbsoluteGate.cs" />
+    <Compile Include="Model\QualityGate\StarAbsoluteGate.cs" />
     <Compile Include="Model\ColorTab.cs" />
     <Compile Include="Dockables\DockableDataTemplates.xaml.cs">
       <DependentUpon>DockableDataTemplates.xaml</DependentUpon>
@@ -275,6 +280,7 @@
     <Compile Include="Dockables\IsMonoTabToVisibilityConverter.cs" />
     <Compile Include="Model\LiveStackItem.cs" />
     <Compile Include="Model\Noise.cs" />
+    <Compile Include="Prompts\QualityGatePrompt.cs" />
     <Compile Include="Utility\TaskManager.cs" />
     <Compile Include="Scripts\PixInsightDebayer.cs" />
     <Compile Include="Scripts\PixInsightFlatIntegration.cs" />

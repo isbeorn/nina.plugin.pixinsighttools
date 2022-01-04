@@ -1,20 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Runtime.Serialization;
-using System.Windows.Input;
 
 namespace PixInsightTools.Model {
-    public class CalibrationFramePrompt {
-        public CalibrationFramePrompt(CalibrationFrame context) {
-            this.Context = context;
-            this.ContinueCommand = new GalaSoft.MvvmLight.Command.RelayCommand(() => { Continue = true; });
-        }
-
-        public bool Continue { get; set; } = false;
-
-        public CalibrationFrame Context { get; }
-        public ICommand ContinueCommand { get; }
-    }
 
     [JsonObject(MemberSerialization.OptIn)]
     public class CalibrationFrame {                
