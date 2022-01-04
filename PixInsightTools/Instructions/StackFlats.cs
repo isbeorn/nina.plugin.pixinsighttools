@@ -125,7 +125,15 @@ namespace PixInsightTools.Instructions {
                         }
 
                         var destinationFile = Path.Combine(destinationFolder, Path.GetFileName(flatToIntegrate));
-                        File.Copy(flatToIntegrate, destinationFile, true);
+                        if(bias != null) {
+                            if(File.Exists(destinationFile)) { 
+                                File.Delete(destinationFile); 
+                            }
+                            File.Move(flatToIntegrate, destinationFile);
+                        } else {
+                            File.Copy(flatToIntegrate, destinationFile, true);
+                        }
+                        
 
                         if (!FlatsToIntegrate.ContainsKey(filter)) {
                             FlatsToIntegrate[filter] = new List<string>();

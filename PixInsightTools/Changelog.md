@@ -1,5 +1,9 @@
 ﻿# Changelog
 
+## 0.1.5.0
+- Fixed id numbering for noise evaluation when continuing a previous stack
+- Fixed flat calibration leaving behind leftover files
+
 ## 0.1.4.0
 - Added a multi session FLAT library option, to use FLAT masters across multiple sessions instead of having to set the FLATs each time
 
