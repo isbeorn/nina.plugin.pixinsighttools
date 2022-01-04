@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PixInsightTools.Dockables {
+namespace PixInsightTools.Scripts {
     internal class PixInsightFlatIntegration : PixInsightScript {
         private readonly static string script = Path.Combine(scriptFolder, "flat_integration.js");
 

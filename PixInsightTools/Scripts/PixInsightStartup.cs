@@ -9,7 +9,7 @@ using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PixInsightTools.Dockables {
+namespace PixInsightTools.Scripts {
 
     internal class PixInsightStartup : PixInsightScript {
 

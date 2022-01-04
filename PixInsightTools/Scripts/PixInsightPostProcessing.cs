@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PixInsightTools.Dockables {
+namespace PixInsightTools.Scripts {
     internal class PixInsightPostProcessing : PixInsightScript {
         private readonly static string abeScript = Path.Combine(scriptFolder, "postprocess_stack.js");
         private readonly static string abePostFix = "_postprocess";

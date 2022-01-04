@@ -1,4 +1,5 @@
 ﻿using NINA.Core.Utility;
+using PixInsightTools.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace PixInsightTools.Dockables {
             this.allTabs = filterTabs;
             this.ContinueCommand = new GalaSoft.MvvmLight.Command.RelayCommand(() => { Continue = true; });
 
-            Targets = allTabs.GroupBy(x => x.Target).Where(g => g.All(x => x.Filter != LiveStackVM.RGB)).Select(x => x.First()).Select(x => x.Target).ToList();
+            Targets = allTabs.GroupBy(x => x.Target).Where(g => g.All(x => x.Filter != ColorTab.RGB)).Select(x => x.First()).Select(x => x.Target).ToList();
 
             Target = Targets.FirstOrDefault();
         }

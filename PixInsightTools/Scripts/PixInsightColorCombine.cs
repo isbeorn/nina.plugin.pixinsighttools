@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PixInsightTools.Dockables {
+namespace PixInsightTools.Scripts {
     class PixInsightColorCombine : PixInsightScript {
         private readonly static string colorcombineScript = Path.Combine(scriptFolder, "colorcombine_stack.js");
         private readonly static string colorcombinePostFix = "_colorcombine";

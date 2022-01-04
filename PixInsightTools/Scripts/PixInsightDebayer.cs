@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PixInsightTools.Dockables {
+namespace PixInsightTools.Scripts {
     class PixInsightDebayer: PixInsightScript {
         private readonly static string script = Path.Combine(scriptFolder, "debayer.js");
         private readonly static string postfix = "_d";

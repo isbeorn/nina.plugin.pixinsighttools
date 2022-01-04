@@ -267,20 +267,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dockables\ColorCombinationPrompt.cs" />
+    <Compile Include="Model\ColorTab.cs" />
     <Compile Include="Dockables\DockableDataTemplates.xaml.cs">
       <DependentUpon>DockableDataTemplates.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\FilterTab.cs" />
     <Compile Include="Dockables\IsMonoTabToVisibilityConverter.cs" />
-    <Compile Include="Dockables\PixInsightDebayer.cs" />
-    <Compile Include="Dockables\PixInsightFlatIntegration.cs" />
-    <Compile Include="Dockables\PixInsightNoiseEvaluation.cs" />
-    <Compile Include="Dockables\PixInsightPostProcessing.cs" />
-    <Compile Include="Dockables\PixInsightAlign.cs" />
-    <Compile Include="Dockables\PixInsightCalibration.cs" />
-    <Compile Include="Dockables\PixInsightColorCombine.cs" />
-    <Compile Include="Dockables\PixInsightScript.cs" />
-    <Compile Include="Dockables\PixInsightStack.cs" />
-    <Compile Include="Dockables\PixInsightStartup.cs" />
+    <Compile Include="Model\LiveStackItem.cs" />
+    <Compile Include="Model\Noise.cs" />
+    <Compile Include="Utility\TaskManager.cs" />
+    <Compile Include="Scripts\PixInsightDebayer.cs" />
+    <Compile Include="Scripts\PixInsightFlatIntegration.cs" />
+    <Compile Include="Scripts\PixInsightNoiseEvaluation.cs" />
+    <Compile Include="Scripts\PixInsightPostProcessing.cs" />
+    <Compile Include="Scripts\PixInsightAlign.cs" />
+    <Compile Include="Scripts\PixInsightCalibration.cs" />
+    <Compile Include="Scripts\PixInsightColorCombine.cs" />
+    <Compile Include="Scripts\PixInsightScript.cs" />
+    <Compile Include="Scripts\PixInsightStack.cs" />
+    <Compile Include="Scripts\PixInsightStartup.cs" />
     <Compile Include="Instructions\DataTemplate.xaml.cs">
       <DependentUpon>DataTemplate.xaml</DependentUpon>
     </Compile>
@@ -292,7 +297,7 @@
     <Compile Include="Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dockables\PixInsightResample.cs" />
+    <Compile Include="Scripts\PixInsightResample.cs" />
     <Compile Include="PixInsightToolsPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

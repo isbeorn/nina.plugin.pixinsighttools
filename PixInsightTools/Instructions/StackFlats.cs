@@ -9,6 +9,7 @@ using NINA.WPF.Base.Interfaces.Mediator;
 using Nito.AsyncEx;
 using PixInsightTools.Dockables;
 using PixInsightTools.Model;
+using PixInsightTools.Scripts;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -117,7 +118,7 @@ namespace PixInsightTools.Instructions {
                             flatToIntegrate = await new PixInsightCalibration(workingDir, slot, false, 0, false, string.Empty, string.Empty, bias.Path).Run(flatToIntegrate, default, default);
                         }
 
-                        var filter = string.IsNullOrWhiteSpace(item.Filter) ? LiveStackVM.NOFILTER : item.Filter;
+                        var filter = string.IsNullOrWhiteSpace(item.Filter) ? FilterTab.NOFILTER : item.Filter;
                         var destinationFolder = Path.Combine(workingDir, "calibrated", "flat", filter);
                         if (!Directory.Exists(destinationFolder)) {
                             Directory.CreateDirectory(destinationFolder);
@@ -145,7 +146,7 @@ namespace PixInsightTools.Instructions {
                 var container = parent as IDeepSkyObjectContainer;
                 if (container != null) {
                     if(string.IsNullOrWhiteSpace(container.Target.DeepSkyObject.NameAsAscii)) {
-                        return LiveStackVM.NOTARGET;
+                        return FilterTab.NOTARGET;
                     } else {
                         return container.Target.DeepSkyObject.NameAsAscii;
                     }
@@ -154,7 +155,7 @@ namespace PixInsightTools.Instructions {
                     return RetrieveTarget(parent.Parent);
                 }
             } else {
-                return LiveStackVM.NOTARGET;
+                return FilterTab.NOTARGET;
             }
         }
 

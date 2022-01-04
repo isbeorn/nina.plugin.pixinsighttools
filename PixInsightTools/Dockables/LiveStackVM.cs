@@ -14,6 +14,8 @@ using NINA.WPF.Base.Interfaces.Mediator;
 using NINA.WPF.Base.ViewModel;
 using Nito.AsyncEx;
 using PixInsightTools.Model;
+using PixInsightTools.Scripts;
+using PixInsightTools.Utility;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -215,10 +217,6 @@ namespace PixInsightTools.Dockables {
             return tab;
         }
 
-        public static readonly string NOTARGET = "No_target";
-        public static readonly string NOFILTER = "No_filter";
-        public static readonly string RGB = "RGB";
-
         private async Task DoWork() {
             using (workerCTS = new CancellationTokenSource()) {
                 try {
@@ -245,8 +243,8 @@ namespace PixInsightTools.Dockables {
                             // Just in case it crashed or was accidentally closed
                             await new PixInsightStartup(workingDir, slot).Run(progress, workerCTS.Token);
 
-                            var target = string.IsNullOrWhiteSpace(item.Target) ? NOTARGET : item.Target;
-                            var filter = string.IsNullOrWhiteSpace(item.Filter) ? NOFILTER : item.Filter;
+                            var target = string.IsNullOrWhiteSpace(item.Target) ? FilterTab.NOTARGET : item.Target;
+                            var filter = string.IsNullOrWhiteSpace(item.Filter) ? FilterTab.NOFILTER : item.Filter;
 
                             tab = GetFilterTab(target, filter);
 
@@ -313,7 +311,7 @@ namespace PixInsightTools.Dockables {
                                 stackPath = Path.Combine(workingDir, GetStackName(target, filter));
 
                                 // Delete stack if it doesn't have a specific target and copy the reference file to be the new stack. If a specific target is present and a stack exists already, continue on that stack instead
-                                if (!File.Exists(stackPath) || target == NOTARGET) {
+                                if (!File.Exists(stackPath) || target == FilterTab.NOTARGET) {
                                     await TryDeleteFile(stackPath);
                                     File.Copy(referenceFile, Path.Combine(workingDir, GetStackName(target, filter)), true);
                                     Logger.Info($"Creating new stack {stackPath}");
@@ -356,7 +354,7 @@ namespace PixInsightTools.Dockables {
                             tab.Stack.Freeze();
 
                             if (FilterTabs?.Count > 2) {
-                                var colorTab = GetFilterTab(target, RGB);
+                                var colorTab = GetFilterTab(target, ColorTab.RGB);
                                 if (colorTab != null && colorTab is ColorTab c) {
                                     c.Locked = true;
                                     var colorImage = await new PixInsightColorCombine(c.RedPath, c.GreenPath, c.BluePath, target, workingDir, slot).Run(progress, workerCTS.Token);
@@ -416,7 +414,7 @@ namespace PixInsightTools.Dockables {
         }
 
         private CalibrationFrame GetFlatMaster(LiveStackItem item) {
-            var filter = string.IsNullOrWhiteSpace(item.Filter) ? NOFILTER : item.Filter;
+            var filter = string.IsNullOrWhiteSpace(item.Filter) ? FilterTab.NOFILTER : item.Filter;
             if (FlatLibrary?.Count > 0) {
                 return FlatLibrary.FirstOrDefault(x => x.Filter == filter && x.Width == item.Width && x.Height == item.Height);
             }
@@ -453,191 +451,6 @@ namespace PixInsightTools.Dockables {
                 isExpanded = value;
                 RaisePropertyChanged();
             }
-        }
-    }
-
-    public class ColorTab : FilterTab {
-
-        public ColorTab(string target, string redPath, string greenPath, string bluePath) : base(LiveStackVM.RGB, "", target) {
-            RedPath = redPath;
-            GreenPath = greenPath;
-            BluePath = bluePath;
-        }
-
-        public string RedPath { get; }
-        public string GreenPath { get; }
-        public string BluePath { get; }
-    }
-
-    public class FilterTab : BaseINPC {
-        public string Filter { get; }
-        public string Path { get; }
-        public string Target { get; }
-        private int count;
-
-        public int Count {
-            get => count;
-            set {
-                count = value;
-                RaisePropertyChanged();
-            }
-        }
-        private double sigmaStart = double.NaN;
-
-        public double SigmaStart {
-            get => sigmaStart;
-            set {
-                sigmaStart = value;
-                RaisePropertyChanged();
-            }
-        }
-        private double sigmaNow = double.NaN;
-
-        public double SigmaNow {
-            get => sigmaNow;
-            set {
-                sigmaNow = value;
-                RaisePropertyChanged();
-                RaisePropertyChanged(nameof(SigmaImprovement));
-            }
-        }
-
-        public double SigmaImprovement {
-            get => (SigmaStart - SigmaNow) / SigmaStart * 100;
-        }
-
-        public bool EnableABE { get; set; }
-        public int ABEDegree { get; set; }
-
-        private bool locked;
-
-        public bool Locked {
-            get {
-                lock (lockobj) {
-                    return locked;
-                }
-            }
-            set {
-                lock (lockobj) {
-                    locked = value;
-                }
-                RaisePropertyChanged();
-            }
-        }
-
-        private bool showNoise;
-
-        public bool ShowNoise {
-            get {
-                return showNoise;
-            }
-            set {
-                showNoise = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        private object lockobj = new object();
-
-        public FilterTab(string filter, string path, string target) {
-            Filter = string.IsNullOrWhiteSpace(filter) ? LiveStackVM.NOFILTER : filter;
-            Path = path;
-            Target = string.IsNullOrWhiteSpace(target) ? LiveStackVM.NOTARGET : target;
-            Count = 0;
-            Locked = false;
-            EnableABE = false;
-            ABEDegree = 2;
-            Noise = new AsyncObservableCollection<Noise>();
-            ShowNoise = PixInsightToolsMediator.Instance.ToolsPlugin.EvaluateNoise;
-        }
-
-        private BitmapSource stack;
-
-        public BitmapSource Stack {
-            get => stack;
-            set {
-                stack = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public string PngPath { get; set; }
-
-        public AsyncObservableCollection<Noise> Noise { get; }
-
-        public void AddNoiseEvaluation(double sigma, double percentage) {
-            if(double.IsNaN(sigma) || double.IsNaN(percentage)) {
-                return;
-            }
-            var noise = new Noise(Count, sigma, percentage);
-            if(double.IsNaN(SigmaStart)) {
-                SigmaStart = sigma;
-            }
-
-            SigmaNow = sigma;
-            Noise.Add(noise);
-        }
-    }
-
-    public class Noise {
-        public Noise(int id, double sigma, double percentage) {
-            this.Id = id;
-            this.Sigma = sigma;
-            this.Percentage = percentage;
-        }
-
-        public int Id { get; }
-        public double Sigma { get; }
-        public double Percentage { get; }
-    }
-
-    public class LiveStackItem {
-
-        public LiveStackItem(string path, string target, string filter, double exposureTime, int gain, int offset, int width, int height, bool isBayered, BayerPatternEnum bayerPattern) {
-            Path = path;
-            Filter = filter;
-            ExposureTime = exposureTime;
-            Gain = gain;
-            Offset = offset;
-            Target = target;
-            Width = width;
-            Height = height;
-            IsBayered = isBayered;
-            BayerPattern = bayerPattern;
-        }
-
-        public string Path { get; }
-        public string Target { get; }
-        public string Filter { get; }
-        public double ExposureTime { get; }
-        public int Gain { get; }
-        public int Offset { get; }
-        public int Width { get; }
-        public int Height { get; }
-        public bool IsBayered { get; }
-        public BayerPatternEnum BayerPattern { get; }
-    }
-
-    public class TaskManager {
-        private Task _currentTask;
-        private object _lock = new object();
-
-        public Task ExecuteOnceAsync(Func<Task> taskFactory) {
-            if (_currentTask == null) {
-                lock (_lock) {
-                    if (_currentTask == null) {
-                        Task concreteTask = taskFactory();
-                        concreteTask.ContinueWith(o => { RemoveTask(); });
-                        _currentTask = concreteTask;
-                    }
-                }
-            }
-
-            return _currentTask;
-        }
-
-        private void RemoveTask() {
-            _currentTask = null;
         }
     }
 }

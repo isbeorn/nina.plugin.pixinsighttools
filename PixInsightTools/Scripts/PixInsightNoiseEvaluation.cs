@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PixInsightTools.Dockables {
+namespace PixInsightTools.Scripts {
     internal class PixInsightNoiseEvaluation : PixInsightScript {
         private readonly static string evalScript = Path.Combine(scriptFolder, "noise_evaluation.js");
         private string input;
