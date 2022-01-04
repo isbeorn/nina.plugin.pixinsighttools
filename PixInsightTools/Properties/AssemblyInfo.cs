@@ -84,6 +84,7 @@ using System.Runtime.InteropServices;
 * Expander options
     + Inside the expander you can manually add single session flat masters, or alternatively automatically let them be filled by the **Stack Flats** instruction
     + *Note* - Multi Session Flat Masters are not shown here, but will be used when you have set them in the options page
+    + Quality Gates can be added to filter out images for the stacks that do not meet certain criteria
     + Furthermore a color combination can be specified when there are at least two different filters for one target available. The color stack will be created after the next frame is stacked.
 
 * Start live stack
