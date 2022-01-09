@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## 0.1.5.1
+- Fixed an issue when using BayerPattern = AUTO that the pattern was not passed correctly
+
 ## 0.1.5.0
 - New feature: Quality gates to ignore images for the stack that do not meet certain critera
 - Fixed id numbering for noise evaluation when continuing a previous stack

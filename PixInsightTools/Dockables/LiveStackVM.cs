@@ -330,9 +330,34 @@ namespace PixInsightTools.Dockables {
                                 if (item.IsBayered) {
                                     string pattern = item.BayerPattern.ToString();
                                     if (item.BayerPattern == BayerPatternEnum.Auto) {
-                                        pattern = BayerPatternEnum.RGGB.ToString();
+                                        switch(item.MetaData.Camera.SensorType) {
+                                            case SensorType.RGBG:
+                                                pattern = BayerPatternEnum.RGBG.ToString();
+                                                break;
+                                            case SensorType.GRGB:
+                                                pattern = BayerPatternEnum.GRGB.ToString();
+                                                break;
+                                            case SensorType.GRBG:
+                                                pattern = BayerPatternEnum.GRBG.ToString();
+                                                break;
+                                            case SensorType.GBRG:
+                                                pattern = BayerPatternEnum.GBRG.ToString();
+                                                break;
+                                            case SensorType.GBGR:
+                                                pattern = BayerPatternEnum.GBGR.ToString();
+                                                break;
+                                            case SensorType.BGRG:
+                                                pattern = BayerPatternEnum.BGRG.ToString();
+                                                break;
+                                            case SensorType.BGGR:
+                                                pattern = BayerPatternEnum.BGGR.ToString();
+                                                break;
+                                            default:
+                                                pattern = BayerPatternEnum.RGGB.ToString();
+                                                break;
+                                        }
                                     }
-                                    debayeredFile = await new PixInsightDebayer(workingDir, slot).Run(referenceFile, item.BayerPattern.ToString(), progress, workerCTS.Token);
+                                    debayeredFile = await new PixInsightDebayer(workingDir, slot).Run(referenceFile, pattern, progress, workerCTS.Token);
                                     referenceFile = debayeredFile;
                                 }
 
