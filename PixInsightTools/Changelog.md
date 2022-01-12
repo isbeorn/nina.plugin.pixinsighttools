@@ -1,5 +1,9 @@
 ﻿# Changelog
 
+## 0.1.6.0
+- ABE degree was always using 4 as value instead of applying the input value
+- Added an option to apply SCNR (Green) on color combined stacks
+
 ## 0.1.5.1
 - Fixed an issue when using BayerPattern = AUTO that the pattern was not passed correctly
 

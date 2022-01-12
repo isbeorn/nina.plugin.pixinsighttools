@@ -266,6 +266,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dockables\TabTemplateSelector.cs" />
     <Compile Include="Prompts\ColorCombinationPrompt.cs" />
     <Compile Include="Prompts\CalibrationFramePrompt.cs" />
     <Compile Include="Model\QualityGate\HFRAbsoluteGate.cs" />

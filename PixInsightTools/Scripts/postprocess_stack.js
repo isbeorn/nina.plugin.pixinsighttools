@@ -2,7 +2,7 @@
 
     let guid = jsArguments[0].substring(1, jsArguments[0].length - 1);
     let stackFile = jsArguments[1];
-    let degree = jsArguments[2];
+    let degree = parseFloat(jsArguments[2]);
     let outputFile = jsArguments[3];
     let outputDir = jsArguments[4];
 
@@ -26,7 +26,7 @@
             P.maxBackground = 1.0000;
             P.minBackground = 0.0000;
             P.useBrightnessLimits = false;
-            P.polyDegree = 4;
+            P.polyDegree = degree;
             P.boxSize = 5;
             P.boxSeparation = 5;
             P.modelImageSampleFormat = AutomaticBackgroundExtractor.prototype.f32;

@@ -14,19 +14,23 @@ namespace PixInsightTools.Scripts {
         private string r;
         private string g;
         private string b;
+        private bool doSCNR;
+        private double scnrAmount;
         private string target;
 
-        public PixInsightColorCombine(string r, string g, string b, string target, string workingDir, int pixInsightSlot) : base(workingDir, pixInsightSlot, new string[] { "done_colorcombine.txt", "error_colorcombine.txt" }) {
+        public PixInsightColorCombine(string r, string g, string b, bool doSCNR, double scnrAmount, string target, string workingDir, int pixInsightSlot) : base(workingDir, pixInsightSlot, new string[] { "done_colorcombine.txt", "error_colorcombine.txt" }) {
             this.r = r;
             this.g = g;
             this.b = b;
+            this.doSCNR = doSCNR;
+            this.scnrAmount = scnrAmount;
             this.target = target;
         }
         public async Task<string> Run(IProgress<ApplicationStatus> progress, CancellationToken ct) {
             var output = Path.Combine(workingDir, $"MASTER_LIGHT_{target}{colorcombinePostFix}.png");
 
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = "Combining colors" });
-            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{colorcombineScript},'{guid}',{r},{g},{b},{output},{workingDir}\" --automation-mode", progress, ct);
+            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{colorcombineScript},'{guid}',{r},{g},{b},{doSCNR},{scnrAmount},{output},{workingDir}\" --automation-mode", progress, ct);
 
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = string.Empty });
 

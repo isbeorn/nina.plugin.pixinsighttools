@@ -6,7 +6,7 @@ function calibrate() {
     let masterFlat = jsArguments[4];
     let masterBias = jsArguments[5];
     let compress = jsArguments[6].toLowerCase() === 'true';
-    let pedestal = jsArguments[7];
+    let pedestal = parseInt(jsArguments[7]);
     let saveAs16Bit = jsArguments[8].toLowerCase() === 'true';
 
     fileToCalibrate = fileToCalibrate.substring(1, fileToCalibrate.length - 1);
@@ -99,7 +99,7 @@ function calibrate() {
     }
     
     if (pedestal) {
-        P.outputPedestal = parseInt(pedestal);
+        P.outputPedestal = pedestal;
     } else {
         P.outputPedestal = 0;
     }

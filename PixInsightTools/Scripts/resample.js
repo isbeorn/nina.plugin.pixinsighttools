@@ -2,7 +2,7 @@
 
     let guid = jsArguments[0].substring(1, jsArguments[0].length - 1);
     let resampleFile = jsArguments[1];
-    let amount = jsArguments[2];
+    let amount = parseInt(jsArguments[2]);
     let outputFile = jsArguments[3];
     let outputDir = jsArguments[4];
 

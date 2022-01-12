@@ -8,6 +8,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace PixInsightTools.Scripts {
 

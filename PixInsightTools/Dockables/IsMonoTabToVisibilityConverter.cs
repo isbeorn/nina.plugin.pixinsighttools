@@ -25,4 +25,19 @@ namespace PixInsightTools.Dockables {
             throw new NotImplementedException();
         }
     }
+    public class IsColorTabToVisibilityConverter : IValueConverter {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            if (value is FilterTab) {
+                if (value is ColorTab) {
+                    return Visibility.Visible;
+                }
+                return Visibility.Collapsed;
+            }
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+            throw new NotImplementedException();
+        }
+    }
 }

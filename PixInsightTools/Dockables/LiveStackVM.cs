@@ -423,7 +423,7 @@ namespace PixInsightTools.Dockables {
                                     var colorTab = GetFilterTab(target, ColorTab.RGB);
                                     if (colorTab != null && colorTab is ColorTab c) {
                                         c.Locked = true;
-                                        var colorImage = await new PixInsightColorCombine(c.RedPath, c.GreenPath, c.BluePath, target, workingDir, slot).Run(progress, workerCTS.Token);
+                                        var colorImage = await new PixInsightColorCombine(c.RedPath, c.GreenPath, c.BluePath, c.EnableSCNR, c.SCNRAmount, target, workingDir, slot).Run(progress, workerCTS.Token);
 
                                         var decoder2 = new PngBitmapDecoder(new Uri(colorImage), BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
                                         c.Stack = decoder2.Frames[0];

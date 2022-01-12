@@ -4,13 +4,17 @@
     let r = jsArguments[1];
     let g = jsArguments[2];
     let b = jsArguments[3];
-    let outputFile = jsArguments[4];
-    let outputDir = jsArguments[5];
+    let doSCNR = jsArguments[4].toLowerCase() === 'true';
+    let scnrAmount = parseFloat(jsArguments[5]);
+    let outputFile = jsArguments[6];
+    let outputDir = jsArguments[7];
 
     console.writeln("guid = " + guid);
     console.writeln("r = " + r);
     console.writeln("g = " + g);
     console.writeln("b = " + b);
+    console.writeln("doSCNR = " + doSCNR);
+    console.writeln("scnrAmount = " + scnrAmount);
     console.writeln("outputFile = " + outputFile);
     console.writeln("outputDir = " + outputDir);
 
@@ -72,6 +76,15 @@
     blueWindow[0].forceClose();
     greenAlignWindow.forceClose();
     blueAlignWindow.forceClose();
+
+    if (doSCNR) {
+        let scnr = new SCNR;
+        scnr.amount = scnrAmount;
+        scnr.protectionMethod = SCNR.prototype.AverageNeutral;
+        scnr.colorToRemove = SCNR.prototype.Green;
+        scnr.preserveLightness = true;
+        scnr.executeOn(colorWindow.mainView);
+    }
 
     colorWindow.saveAs(outputFile, false, false, false, false);
     colorWindow.forceClose();
