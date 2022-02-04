@@ -28,8 +28,8 @@ namespace PixInsightTools.Prompts {
             var distanceRed = int.MaxValue;
             var distanceHa = int.MaxValue;            
             for(int i = 0; i < FilterTabs.Count; i++) {
-                distanceRed = Math.Min(distanceRed, Fastenshtein.Levenshtein.Distance("Red", FilterTabs[i].Filter));
-                distanceHa = Math.Min(distanceRed, Fastenshtein.Levenshtein.Distance("HA", FilterTabs[i].Filter));
+                distanceRed = Math.Min(distanceRed, Fastenshtein.Levenshtein.Distance("Red".ToLower(), FilterTabs[i].Filter.ToLower()));
+                distanceHa = Math.Min(distanceRed, Fastenshtein.Levenshtein.Distance("HA".ToLower(), FilterTabs[i].Filter.ToLower()));
             }
 
             if(distanceRed <= distanceHa) { 
@@ -55,7 +55,7 @@ namespace PixInsightTools.Prompts {
         }
 
         private FilterTab GetFilterForChannel(string target) {
-            return FilterTabs.OrderBy(x => Fastenshtein.Levenshtein.Distance(target, x.Filter)).First();            
+            return FilterTabs.OrderBy(x => Fastenshtein.Levenshtein.Distance(target.ToLower(), x.Filter.ToLower())).First();            
         }
 
         private string target;

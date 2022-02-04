@@ -243,13 +243,7 @@ namespace PixInsightTools.Dockables {
         }
 
         private FilterTab GetFilterTab(string target, string filter) {
-            var tab = filterTabs.FirstOrDefault(x => x.Filter == filter && x.Target == target);
-
-            if (tab != null) {
-                tab.Locked = true;
-            }
-
-            return tab;
+            return filterTabs.FirstOrDefault(x => x.Filter == filter && x.Target == target);
         }
 
         private async Task DoWork() {
@@ -288,6 +282,9 @@ namespace PixInsightTools.Dockables {
                                 var filter = string.IsNullOrWhiteSpace(item.Filter) ? FilterTab.NOFILTER : item.Filter;
 
                                 tab = GetFilterTab(target, filter);
+                                if(tab != null) { 
+                                    tab.Locked = true;
+                                }
 
                                 CalibrationFrame flat = GetFlatMaster(item);
                                 CalibrationFrame dark = GetDarkMaster(item);
@@ -421,7 +418,9 @@ namespace PixInsightTools.Dockables {
 
                                 if (FilterTabs?.Count > 2) {
                                     var colorTab = GetFilterTab(target, ColorTab.RGB);
-                                    if (colorTab != null && colorTab is ColorTab c) {
+                                    if (colorTab != null && colorTab is ColorTab c 
+                                            && (c.RedPath == tab.PngPath || c.GreenPath == tab.PngPath || c.BluePath == tab.PngPath) // Skip color combination if the current tab doesn't contain relevant data for the combination
+                                    ) {
                                         c.Locked = true;
                                         var colorImage = await new PixInsightColorCombine(c.RedPath, c.GreenPath, c.BluePath, c.EnableSCNR, c.SCNRAmount, target, workingDir, slot).Run(progress, workerCTS.Token);
 
