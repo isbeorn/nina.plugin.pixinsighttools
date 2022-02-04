@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## 0.1.6.1
+- Skip RGB Combination if current frame is not relevant
+
 ## 0.1.6.0
 - ABE degree was always using 4 as value instead of applying the input value
 - Added an option to apply SCNR (Green) on color combined stacks
