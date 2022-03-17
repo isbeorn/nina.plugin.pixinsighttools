@@ -115,7 +115,17 @@ namespace PixInsightTools.Instructions {
 
                         var flatToIntegrate = item.PathToImage.LocalPath;
                         if (bias != null) {
-                            flatToIntegrate = await new PixInsightCalibration(workingDir, slot, false, 0, false, string.Empty, string.Empty, bias.Path).Run(flatToIntegrate, default, default);
+                            flatToIntegrate = await new PixInsightCalibration(workingDir,
+                                    slot,
+                                    false,
+                                    0,
+                                    false,
+                                    string.Empty,
+                                    string.Empty,
+                                    bias.Path,
+                                    PixInsightToolsMediator.Instance.ToolsPlugin.CalibrationPrefix,
+                                    PixInsightToolsMediator.Instance.ToolsPlugin.CalibrationPostfix)
+                                .Run(flatToIntegrate, default, default);
                         }
 
                         var filter = string.IsNullOrWhiteSpace(item.Filter) ? FilterTab.NOFILTER : item.Filter;

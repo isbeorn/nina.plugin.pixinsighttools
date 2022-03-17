@@ -307,7 +307,19 @@ namespace PixInsightTools.Dockables {
 
                                     var pedestal = PixInsightToolsMediator.Instance.ToolsPlugin.Pedestal;
                                     var saveAs16Bit = PixInsightToolsMediator.Instance.ToolsPlugin.SaveAs16Bit;
-                                    calibratedFile = await new PixInsightCalibration(workingDir, slot, compress, pedestal, saveAs16Bit, flat?.Path ?? "", dark?.Path ?? "", bias?.Path ?? "").Run(item.Path, progress, workerCTS.Token);
+                                    
+                                    calibratedFile = await new PixInsightCalibration(
+                                            workingDir,
+                                            slot,
+                                            compress,
+                                            pedestal,
+                                            saveAs16Bit,
+                                            flat?.Path ?? "",
+                                            dark?.Path ?? "",
+                                            bias?.Path ?? "",
+                                            PixInsightToolsMediator.Instance.ToolsPlugin.CalibrationPrefix,
+                                            PixInsightToolsMediator.Instance.ToolsPlugin.CalibrationPostfix)
+                                        .Run(item.Path, progress, workerCTS.Token);
 
                                     if (PixInsightToolsMediator.Instance.ToolsPlugin.KeepCalibratedFiles) {
                                         var destinationFolder = Path.Combine(workingDir, "calibrated", target, filter);

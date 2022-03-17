@@ -239,7 +239,23 @@ namespace PixInsightTools {
                 RaisePropertyChanged();
             }
         }
-       
+
+        public string CalibrationPrefix {
+            get => pluginSettings.GetValueString(nameof(CalibrationPrefix), "");
+            set {
+                pluginSettings.SetValueString(nameof(CalibrationPrefix), CoreUtil.ReplaceInvalidFilenameChars(value));
+                RaisePropertyChanged();
+            }
+        }
+
+        public string CalibrationPostfix {
+            get => pluginSettings.GetValueString(nameof(CalibrationPostfix), "_c");
+            set {
+                pluginSettings.SetValueString(nameof(CalibrationPostfix), CoreUtil.ReplaceInvalidFilenameChars(value));
+                RaisePropertyChanged();
+            }
+        }
+
         public bool UseBiasForLights {
             get => pluginSettings.GetValueBoolean(nameof(UseBiasForLights), false);
             set {

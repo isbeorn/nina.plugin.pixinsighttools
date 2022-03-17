@@ -40,6 +40,8 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition Height="Auto" />
@@ -145,7 +147,44 @@
                     HorizontalAlignment="Left"
                     IsChecked="{Binding KeepCalibratedFiles, Mode=TwoWay}" />
             </Grid>
+
             <Grid Grid.Row="3" Margin="0,2.5,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Width="170"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Text="Calibration Prefix" />
+                <TextBox
+                    Grid.Column="1"
+                    MinWidth="65"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Text="{Binding CalibrationPrefix, Mode=TwoWay}" />
+            </Grid>
+
+            <Grid Grid.Row="4" Margin="0,2.5,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Width="170"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Text="Calibration Postfix" />
+                <TextBox
+                    Grid.Column="1"
+                    MinWidth="65"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Text="{Binding CalibrationPostfix, Mode=TwoWay}" />
+            </Grid>
+
+            <Grid Grid.Row="5" Margin="0,2.5,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
@@ -160,7 +199,7 @@
                     HorizontalAlignment="Left"
                     IsChecked="{Binding CompressCalibratedFiles, Mode=TwoWay}" />
             </Grid>
-            <Grid Grid.Row="4" Margin="0,2.5,0,0">
+            <Grid Grid.Row="6" Margin="0,2.5,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
@@ -175,7 +214,7 @@
                     HorizontalAlignment="Left"
                     IsChecked="{Binding SaveAs16Bit, Mode=TwoWay}" />
             </Grid>
-            <Grid Grid.Row="5" Margin="0,2.5,0,0">
+            <Grid Grid.Row="7" Margin="0,2.5,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
@@ -190,7 +229,7 @@
                     HorizontalAlignment="Left"
                     IsChecked="{Binding UseBiasForLights, Mode=TwoWay}" />
             </Grid>
-            <Grid Grid.Row="6" Margin="0,2.5,0,0">
+            <Grid Grid.Row="8" Margin="0,2.5,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
@@ -214,7 +253,7 @@
                     </TextBox.Text>
                 </TextBox>
             </Grid>
-            <Grid Grid.Row="7" Margin="0,2.5,0,0">
+            <Grid Grid.Row="9" Margin="0,2.5,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
@@ -239,7 +278,7 @@
                 </TextBox>
             </Grid>
 
-            <Grid Grid.Row="8" Margin="0,2.5,0,0">
+            <Grid Grid.Row="10" Margin="0,2.5,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
@@ -257,7 +296,7 @@
             </Grid>
 
             <GroupBox
-                Grid.Row="9"
+                Grid.Row="11"
                 Margin="0,5,0,0"
                 Header="Dark Library">
                 <Grid>
@@ -337,7 +376,7 @@
 
             </GroupBox>
             <GroupBox
-                Grid.Row="10"
+                Grid.Row="12"
                 Margin="0,5,0,0"
                 Header="Bias Library">
                 <Grid>
@@ -410,7 +449,7 @@
 
             </GroupBox>
             <GroupBox
-                Grid.Row="11"
+                Grid.Row="13"
                 Margin="0,5,0,0"
                 Header="Multi Session Flat Library">
                 <Grid>
@@ -475,7 +514,7 @@
                 </Grid>
 
             </GroupBox>
-            <Button Grid.Row="12" Command="{Binding AddCalibrationFrameCommand}">Add Calibration Master</Button>
+            <Button Grid.Row="14" Command="{Binding AddCalibrationFrameCommand}">Add Calibration Master</Button>
         </Grid>
     </DataTemplate>
 

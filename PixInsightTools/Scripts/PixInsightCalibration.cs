@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 namespace PixInsightTools.Scripts {
     internal class PixInsightCalibration : PixInsightScript {
         private readonly static string calibrateScript = Path.Combine(scriptFolder, "calibrate.js");
-        private readonly static string calibrationPostfix = "_c";
 
         private string flat;
         private string dark;
@@ -20,8 +19,10 @@ namespace PixInsightTools.Scripts {
         private bool compress;
         private int pedestal;
         private bool saveAs16Bit;
+        private string prefix;
+        private string postfix;
 
-        public PixInsightCalibration(string workingDir, int pixInsightSlot, bool compress, int pedestal, bool saveAs16Bit, string flat, string dark, string bias) : base(workingDir, pixInsightSlot, new string[] { "calibrated.txt" }) {
+        public PixInsightCalibration(string workingDir, int pixInsightSlot, bool compress, int pedestal, bool saveAs16Bit, string flat, string dark, string bias, string prefix, string postfix) : base(workingDir, pixInsightSlot, new string[] { "calibrated.txt" }) {
             this.flat = flat;
             this.dark = dark;
             this.bias = bias;
@@ -29,15 +30,18 @@ namespace PixInsightTools.Scripts {
             this.pedestal = pedestal;
             this.saveAs16Bit = saveAs16Bit;
 
+            this.prefix = prefix.Replace('\'', '_');
+            this.postfix = postfix.Replace('\'', '_');
+
         }
 
         public async Task<string> Run(string item, IProgress<ApplicationStatus> progress, CancellationToken ct) {
 
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = $"Calibrating" });
-            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{calibrateScript},'{guid}','{item}','{workingDir}','{dark}','{flat}','{bias}',{compress},{pedestal},{saveAs16Bit}\" --automation-mode", progress, ct);
+            await RunPixInsightScript($" --execute={pixInsightSlot}:\"{calibrateScript},'{guid}','{item}','{workingDir}','{dark}','{flat}','{bias}',{compress},{pedestal},{saveAs16Bit},'{prefix}','{postfix}'\" --automation-mode", progress, ct);
             progress?.Report(new ApplicationStatus() { Source = "Live Stack", Status = string.Empty });
 
-            return Path.Combine(workingDir, Path.GetFileNameWithoutExtension(item) + $"{calibrationPostfix}.xisf");
+            return Path.Combine(workingDir, $"{prefix}" + Path.GetFileNameWithoutExtension(item) + $"{postfix}.xisf");
         }
 
     }

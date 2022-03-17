@@ -8,12 +8,18 @@ function calibrate() {
     let compress = jsArguments[6].toLowerCase() === 'true';
     let pedestal = parseInt(jsArguments[7]);
     let saveAs16Bit = jsArguments[8].toLowerCase() === 'true';
+    let prefix = jsArguments[9];
+    let postfix = jsArguments[10];
 
     fileToCalibrate = fileToCalibrate.substring(1, fileToCalibrate.length - 1);
     outputDir = outputDir.substring(1, outputDir.length - 1);
     masterDark = masterDark.substring(1, masterDark.length - 1);
     masterFlat = masterFlat.substring(1, masterFlat.length - 1);
     masterBias = masterBias.substring(1, masterBias.length - 1);
+
+
+    prefix = prefix.substring(1, prefix.length - 1);
+    postfix = postfix.substring(1, postfix.length - 1);
 
     console.writeln("guid = " + guid);
     console.writeln("fileToCalibrate = " + fileToCalibrate);
@@ -24,6 +30,8 @@ function calibrate() {
     console.writeln("compress = " + compress);
     console.writeln("pedestal = " + pedestal);
     console.writeln("saveAs16Bit = " + saveAs16Bit);
+    console.writeln("prefix = " + prefix);
+    console.writeln("postfix = " + postfix);
 
     let P = new ImageCalibration;
     P.targetFrames = [ // enabled, path
@@ -90,8 +98,8 @@ function calibrate() {
     P.noiseEvaluationAlgorithm = ImageCalibration.prototype.NoiseEvaluation_MRS;
     P.outputDirectory = outputDir;
     P.outputExtension = ".xisf";
-    P.outputPrefix = "";
-    P.outputPostfix = "_c";
+    P.outputPrefix = prefix;
+    P.outputPostfix = postfix;
     if (saveAs16Bit) {
         P.outputSampleFormat = ImageCalibration.prototype.i16;
     } else {
