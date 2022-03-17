@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## 0.1.6.2
+- Added fields to specify calibration pre and postfix
+
 ## 0.1.6.1
 - Skip RGB Combination if current frame is not relevant
 
