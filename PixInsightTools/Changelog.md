@@ -1,5 +1,9 @@
 ﻿# Changelog
 
+## 0.1.7.0
+- Quality Gates are now saved and reloaded
+- Noise chart scale is now automatically scaled instead of 0..100
+
 ## 0.1.6.2
 - Added fields to specify calibration pre and postfix
 

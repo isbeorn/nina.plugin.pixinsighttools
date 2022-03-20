@@ -280,8 +280,7 @@
                                                         IsZoomEnabled="False"
                                                         MajorGridlineColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}, Converter={StaticResource SetAlphaToColorConverter}, ConverterParameter=60}"
                                                         MajorGridlineStyle="LongDash"
-                                                        Maximum="100"
-                                                        Minimum="0"
+                                                        
                                                         Position="Left"
                                                         TextColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}}"
                                                         TicklineColor="{Binding Path=Color, Source={StaticResource SecondaryBrush}}" />

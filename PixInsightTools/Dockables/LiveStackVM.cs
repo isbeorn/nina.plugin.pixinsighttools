@@ -65,7 +65,12 @@ namespace PixInsightTools.Dockables {
 
             queue = new AsyncProducerConsumerQueue<LiveStackItem>(1000);
             FilterTabs = new AsyncObservableCollection<FilterTab>();
-            QualityGates = new AsyncObservableCollection<IQualityGate>();
+
+            QualityGates = new AsyncObservableCollection<IQualityGate>(PixInsightToolsPlugin.FromStringToList<IQualityGate>(PixInsightToolsMediator.Instance.ToolsPlugin.PluginSettings.GetValueString(nameof(QualityGates), "")));
+            foreach(var q in QualityGates) {
+                q.PropertyChanged += QualityGate_PropertyChanged;
+            }
+
 
             StartLiveStackCommand = new AsyncCommand<bool>(async () => { await workManager.ExecuteOnceAsync(DoWork); return true; });
             CancelLiveStackCommand = new GalaSoft.MvvmLight.Command.RelayCommand(CancelLiveStack);
@@ -78,8 +83,14 @@ namespace PixInsightTools.Dockables {
 
         }
 
+        private void QualityGate_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            PixInsightToolsMediator.Instance.ToolsPlugin.PluginSettings.SetValueString(nameof(QualityGates), PixInsightToolsPlugin.FromListToString(QualityGates));
+        }
+
         private void DeleteQualityGate(IQualityGate obj) {
+            obj.PropertyChanged -= QualityGate_PropertyChanged;
             QualityGates.Remove(obj);
+            PixInsightToolsMediator.Instance.ToolsPlugin.PluginSettings.SetValueString(nameof(QualityGates), PixInsightToolsPlugin.FromListToString(QualityGates));
         }
 
         private async Task<bool> AddQualityGate() {
@@ -88,7 +99,10 @@ namespace PixInsightTools.Dockables {
             await service.ShowDialog(prompt, "Quality Gate Addition", System.Windows.ResizeMode.NoResize, System.Windows.WindowStyle.ToolWindow);
 
             if (prompt.Continue && prompt.SelectedGate != null) {
+                prompt.SelectedGate.PropertyChanged += QualityGate_PropertyChanged;
                 QualityGates.Add(prompt.SelectedGate);
+
+                PixInsightToolsMediator.Instance.ToolsPlugin.PluginSettings.SetValueString(nameof(QualityGates), PixInsightToolsPlugin.FromListToString(QualityGates));
             }
             return prompt.Continue;
         }

@@ -1,10 +1,17 @@
-﻿using NINA.Core.Utility;
+﻿using Newtonsoft.Json;
+using NINA.Core.Utility;
 
 namespace PixInsightTools.Model.QualityGate {
+    [JsonObject(MemberSerialization.OptIn)]
     public class RMSAbsoluteGate : BaseINPC, IQualityGate {
+        public RMSAbsoluteGate() {
+            Value = 10;
+        }
+        [JsonProperty]
         public string Name => "RMS ArcSec below threshold";
 
         private double value;
+        [JsonProperty]
         public double Value {
             get => value;
             set {

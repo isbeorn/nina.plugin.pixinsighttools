@@ -76,7 +76,7 @@ namespace PixInsightTools {
             this.windowServiceFactory = windowServiceFactory;
             this.imageDataFactory = imageDataFactory;
             this.profileService = profileService;
-            this.pluginSettings = new PluginOptionsAccessor(profileService, Guid.Parse(this.Identifier));
+            this.PluginSettings = new PluginOptionsAccessor(profileService, Guid.Parse(this.Identifier));
 
             if (string.IsNullOrWhiteSpace(Properties.Settings.Default.PixInsightLocation)) { 
                 if (Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "PixInsight", "bin"))) {
@@ -85,9 +85,9 @@ namespace PixInsightTools {
                 }
             }
                         
-            DarkLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(DarkLibrary), "")));                        
-            BiasLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(BiasLibrary), "")));
-            FlatLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(FlatLibrary), "")));
+            DarkLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(PluginSettings.GetValueString(nameof(DarkLibrary), "")));                        
+            BiasLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(PluginSettings.GetValueString(nameof(BiasLibrary), "")));
+            FlatLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(PluginSettings.GetValueString(nameof(FlatLibrary), "")));
 
             if (!Directory.Exists(Properties.Settings.Default.WorkingDirectory)) {
                 Properties.Settings.Default.WorkingDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "N.I.N.A", "LiveStack");
@@ -103,9 +103,9 @@ namespace PixInsightTools {
         }
 
         private void ProfileService_ProfileChanged(object sender, EventArgs e) {
-            DarkLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(DarkLibrary), "")));
-            BiasLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(BiasLibrary), "")));
-            FlatLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(pluginSettings.GetValueString(nameof(FlatLibrary), "")));
+            DarkLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(PluginSettings.GetValueString(nameof(DarkLibrary), "")));
+            BiasLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(PluginSettings.GetValueString(nameof(BiasLibrary), "")));
+            FlatLibrary = new AsyncObservableCollection<CalibrationFrame>(FromStringToList<CalibrationFrame>(PluginSettings.GetValueString(nameof(FlatLibrary), "")));
             RaisePropertyChanged(nameof(KeepCalibratedFiles));
             RaisePropertyChanged(nameof(UseBiasForLights));
             RaisePropertyChanged(nameof(CompressCalibratedFiles));
@@ -121,17 +121,17 @@ namespace PixInsightTools {
 
         private void DeleteBiasMaster(CalibrationFrame c) {
             BiasLibrary.Remove(c);
-            pluginSettings.SetValueString(nameof(BiasLibrary), FromListToString(BiasLibrary));
+            PluginSettings.SetValueString(nameof(BiasLibrary), FromListToString(BiasLibrary));
         }
 
         private void DeleteDarkMaster(CalibrationFrame c) {
             DarkLibrary.Remove(c);
-            pluginSettings.SetValueString(nameof(DarkLibrary), FromListToString(DarkLibrary));
+            PluginSettings.SetValueString(nameof(DarkLibrary), FromListToString(DarkLibrary));
         }
 
         private void DeleteFlatMaster(CalibrationFrame c) {
             FlatLibrary.Remove(c);
-            pluginSettings.SetValueString(nameof(FlatLibrary), FromListToString(FlatLibrary));
+            PluginSettings.SetValueString(nameof(FlatLibrary), FromListToString(FlatLibrary));
         }
 
         private void OpenWorkingFolderDiag() {
@@ -219,13 +219,13 @@ namespace PixInsightTools {
                 if(prompt.Continue) { 
                     if(frame.Type == CalibrationFrameType.BIAS) {
                         BiasLibrary.Add(frame);
-                        pluginSettings.SetValueString(nameof(BiasLibrary), FromListToString(BiasLibrary));
+                        PluginSettings.SetValueString(nameof(BiasLibrary), FromListToString(BiasLibrary));
                     } else if(frame.Type == CalibrationFrameType.DARK) {
                         DarkLibrary.Add(frame);
-                        pluginSettings.SetValueString(nameof(DarkLibrary), FromListToString(DarkLibrary));
+                        PluginSettings.SetValueString(nameof(DarkLibrary), FromListToString(DarkLibrary));
                     } else if(frame.Type == CalibrationFrameType.FLAT) {
                         FlatLibrary.Add(frame);
-                        pluginSettings.SetValueString(nameof(FlatLibrary), FromListToString(FlatLibrary));
+                        PluginSettings.SetValueString(nameof(FlatLibrary), FromListToString(FlatLibrary));
                     }
                 }
             }
@@ -233,73 +233,73 @@ namespace PixInsightTools {
         }
 
         public bool KeepCalibratedFiles {
-            get => pluginSettings.GetValueBoolean(nameof(KeepCalibratedFiles), false);
+            get => PluginSettings.GetValueBoolean(nameof(KeepCalibratedFiles), false);
             set {
-                pluginSettings.SetValueBoolean(nameof(KeepCalibratedFiles), value);
+                PluginSettings.SetValueBoolean(nameof(KeepCalibratedFiles), value);
                 RaisePropertyChanged();
             }
         }
 
         public string CalibrationPrefix {
-            get => pluginSettings.GetValueString(nameof(CalibrationPrefix), "");
+            get => PluginSettings.GetValueString(nameof(CalibrationPrefix), "");
             set {
-                pluginSettings.SetValueString(nameof(CalibrationPrefix), CoreUtil.ReplaceInvalidFilenameChars(value));
+                PluginSettings.SetValueString(nameof(CalibrationPrefix), CoreUtil.ReplaceInvalidFilenameChars(value));
                 RaisePropertyChanged();
             }
         }
 
         public string CalibrationPostfix {
-            get => pluginSettings.GetValueString(nameof(CalibrationPostfix), "_c");
+            get => PluginSettings.GetValueString(nameof(CalibrationPostfix), "_c");
             set {
-                pluginSettings.SetValueString(nameof(CalibrationPostfix), CoreUtil.ReplaceInvalidFilenameChars(value));
+                PluginSettings.SetValueString(nameof(CalibrationPostfix), CoreUtil.ReplaceInvalidFilenameChars(value));
                 RaisePropertyChanged();
             }
         }
 
         public bool UseBiasForLights {
-            get => pluginSettings.GetValueBoolean(nameof(UseBiasForLights), false);
+            get => PluginSettings.GetValueBoolean(nameof(UseBiasForLights), false);
             set {
-                pluginSettings.SetValueBoolean(nameof(UseBiasForLights), value);
+                PluginSettings.SetValueBoolean(nameof(UseBiasForLights), value);
                 RaisePropertyChanged();
             }
         }
        
         public bool CompressCalibratedFiles {
-            get => pluginSettings.GetValueBoolean(nameof(CompressCalibratedFiles), false);
+            get => PluginSettings.GetValueBoolean(nameof(CompressCalibratedFiles), false);
             set {
-                pluginSettings.SetValueBoolean(nameof(CompressCalibratedFiles), value);
+                PluginSettings.SetValueBoolean(nameof(CompressCalibratedFiles), value);
                 RaisePropertyChanged();
             }
         }
         
         public bool SaveAs16Bit {
-            get => pluginSettings.GetValueBoolean(nameof(SaveAs16Bit), false);
+            get => PluginSettings.GetValueBoolean(nameof(SaveAs16Bit), false);
             set {
-                pluginSettings.SetValueBoolean(nameof(SaveAs16Bit), value);
+                PluginSettings.SetValueBoolean(nameof(SaveAs16Bit), value);
                 RaisePropertyChanged();
             }
         }
         
         public int ResampleAmount {
-            get => pluginSettings.GetValueInt32(nameof(ResampleAmount), 2);
+            get => PluginSettings.GetValueInt32(nameof(ResampleAmount), 2);
             set {
-                pluginSettings.SetValueInt32(nameof(ResampleAmount), value);
+                PluginSettings.SetValueInt32(nameof(ResampleAmount), value);
                 RaisePropertyChanged();
             }
         }
         
         public int Pedestal {
-            get => pluginSettings.GetValueInt32(nameof(Pedestal), 0);
+            get => PluginSettings.GetValueInt32(nameof(Pedestal), 0);
             set {
-                pluginSettings.SetValueInt32(nameof(Pedestal), value);
+                PluginSettings.SetValueInt32(nameof(Pedestal), value);
                 RaisePropertyChanged();
             }
         }
 
         public bool EvaluateNoise {
-            get => pluginSettings.GetValueBoolean(nameof(EvaluateNoise), true);
+            get => PluginSettings.GetValueBoolean(nameof(EvaluateNoise), true);
             set {
-                pluginSettings.SetValueBoolean(nameof(EvaluateNoise), value);
+                PluginSettings.SetValueBoolean(nameof(EvaluateNoise), value);
                 RaisePropertyChanged();
             }
         }
@@ -328,7 +328,7 @@ namespace PixInsightTools {
 
         public static IList<T> FromStringToList<T>(string collection) {
             try {
-                return JsonConvert.DeserializeObject<IList<T>>(collection) ?? new List<T>();
+                return JsonConvert.DeserializeObject<IList<T>>(collection, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto }) ?? new List<T>();
             } catch(Exception) {
                 return new List<T>();
             }
@@ -337,7 +337,7 @@ namespace PixInsightTools {
 
         public static string FromListToString<T>(IList<T> l) {       
             try { 
-                return JsonConvert.SerializeObject(l) ?? "";
+                return JsonConvert.SerializeObject(l, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto }) ?? "";
             } catch(Exception) {
                 return "";
             }
@@ -372,7 +372,7 @@ namespace PixInsightTools {
         private IWindowServiceFactory windowServiceFactory;
         private IImageDataFactory imageDataFactory;
         private IProfileService profileService;
-        private IPluginOptionsAccessor pluginSettings;
+        public IPluginOptionsAccessor PluginSettings { get; }
 
         public AsyncObservableCollection<CalibrationFrame> BiasLibrary {
             get => biasLibrary;
