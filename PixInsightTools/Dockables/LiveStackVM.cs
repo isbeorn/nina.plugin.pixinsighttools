@@ -408,7 +408,7 @@ namespace PixInsightTools.Dockables {
                                         Logger.Info($"Continuing on existing stack {stackPath}");
                                     }
 
-                                    tab = new FilterTab(filter, stackPath, target);
+                                    tab = new FilterTab(filter, stackPath, target, PixInsightToolsMediator.Instance.ToolsPlugin.DefaultABE, PixInsightToolsMediator.Instance.ToolsPlugin.DefaultABEDegree);
                                     FilterTabs.Add(tab);
                                 }
 

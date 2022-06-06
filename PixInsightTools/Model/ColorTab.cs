@@ -2,7 +2,7 @@
     public class ColorTab : FilterTab {
         public static readonly string RGB = "RGB";
 
-        public ColorTab(string target, string redPath, string greenPath, string bluePath) : base(ColorTab.RGB, "", target) {
+        public ColorTab(string target, string redPath, string greenPath, string bluePath) : base(ColorTab.RGB, "", target, false, 2) {
             RedPath = redPath;
             GreenPath = greenPath;
             BluePath = bluePath;

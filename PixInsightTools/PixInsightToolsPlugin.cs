@@ -304,6 +304,23 @@ namespace PixInsightTools {
             }
         }
 
+        public bool DefaultABE {
+            get => PluginSettings.GetValueBoolean(nameof(DefaultABE), false);
+            set {
+                PluginSettings.SetValueBoolean(nameof(DefaultABE), value);
+                RaisePropertyChanged();
+            }
+        }
+
+        public int DefaultABEDegree {
+            get => PluginSettings.GetValueInt32(nameof(DefaultABEDegree), 2);
+            set {
+                if(value < 0) { value = 0; }
+                PluginSettings.SetValueInt32(nameof(DefaultABEDegree), value);
+                RaisePropertyChanged();
+            }
+        }
+
         public string PixInsightLocation {
             get {
                 return Properties.Settings.Default.PixInsightLocation;

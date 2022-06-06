@@ -42,6 +42,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition Height="Auto" />
@@ -295,8 +296,35 @@
 
             </Grid>
 
+            <Grid Grid.Row="11" Margin="0,2.5,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Width="170"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Text="Enable ABE on new stacks?" />
+                <StackPanel
+                    Grid.Column="1"
+                    HorizontalAlignment="Left"
+                    Orientation="Horizontal">
+                    <CheckBox HorizontalAlignment="Left" IsChecked="{Binding DefaultABE, Mode=TwoWay}" />
+
+                    <ninactrl:UnitTextBox
+                        MinWidth="50"
+                        Margin="5,0,0,0"
+                        Text="{Binding DefaultABEDegree}"
+                        Unit="x"
+                        Visibility="{Binding DefaultABE, Converter={StaticResource BooleanToVisibilityCollapsedConverter}}" />
+                </StackPanel>
+
+
+            </Grid>
+
             <GroupBox
-                Grid.Row="11"
+                Grid.Row="12"
                 Margin="0,5,0,0"
                 Header="Dark Library">
                 <Grid>
@@ -376,7 +404,7 @@
 
             </GroupBox>
             <GroupBox
-                Grid.Row="12"
+                Grid.Row="13"
                 Margin="0,5,0,0"
                 Header="Bias Library">
                 <Grid>
@@ -449,7 +477,7 @@
 
             </GroupBox>
             <GroupBox
-                Grid.Row="13"
+                Grid.Row="14"
                 Margin="0,5,0,0"
                 Header="Multi Session Flat Library">
                 <Grid>
@@ -514,7 +542,7 @@
                 </Grid>
 
             </GroupBox>
-            <Button Grid.Row="14" Command="{Binding AddCalibrationFrameCommand}">Add Calibration Master</Button>
+            <Button Grid.Row="15" Command="{Binding AddCalibrationFrameCommand}">Add Calibration Master</Button>
         </Grid>
     </DataTemplate>
 

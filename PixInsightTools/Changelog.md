@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## 0.1.7.1
+- Added an option to enable ABE by default
+
 ## 0.1.7.0
 - Quality Gates are now saved and reloaded
 - Noise chart scale is now automatically scaled instead of 0..100

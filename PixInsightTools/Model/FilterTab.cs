@@ -7,14 +7,14 @@ namespace PixInsightTools.Model {
         public static readonly string NOTARGET = "No_target";
         public static readonly string NOFILTER = "No_filter";
 
-        public FilterTab(string filter, string path, string target) {
+        public FilterTab(string filter, string path, string target, bool defaultABE, int defaultABEDegree) {
             Filter = string.IsNullOrWhiteSpace(filter) ? NOFILTER : filter;
             Path = path;
             Target = string.IsNullOrWhiteSpace(target) ? NOTARGET : target;
             Count = 0;
             Locked = false;
-            EnableABE = false;
-            ABEDegree = 2;
+            EnableABE = defaultABE;
+            ABEDegree = defaultABEDegree;
             Noise = new AsyncObservableCollection<Noise>();
             ShowNoise = PixInsightToolsMediator.Instance.ToolsPlugin.EvaluateNoise;
         }
