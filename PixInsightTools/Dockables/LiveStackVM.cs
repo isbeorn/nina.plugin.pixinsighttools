@@ -240,7 +240,7 @@ namespace PixInsightTools.Dockables {
         }
 
         private string GetStackName(string target, string filter) {
-            return $"MASTER_LIGHT_{target}_{filter}.xisf";
+            return $"MASTER_LIGHT_{CoreUtil.ReplaceAllInvalidFilenameChars(target)}_{filter}.xisf";
         }
 
         private async Task TryDeleteFile(string path) {

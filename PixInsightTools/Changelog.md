@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## 0.1.7.2
+- When a target name contains an illegal path character, this is now properly escaped for the stack name to work
+
 ## 0.1.7.1
 - Added an option to enable ABE by default
 
