@@ -61,6 +61,7 @@ namespace PixInsightTools.Scripts {
             await statusFileCleanup();
 
             var psi = new ProcessStartInfo($"\"{Properties.Settings.Default.PixInsightLocation}\"", arguments);
+            psi.UseShellExecute = true;
             Logger.Info($"Starting process: {psi.FileName} {psi.Arguments}");
             var p = Process.Start(psi);
             p.PriorityClass = ProcessPriorityClass.BelowNormal;

@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## 1.0.0.0
+- Upgrade to .NET7
+
 ## 0.1.7.2
 - When a target name contains an illegal path character, this is now properly escaped for the stack name to work
 

@@ -10,9 +10,10 @@
     xmlns:mediator="clr-namespace:PixInsightTools"
     xmlns:mini="clr-namespace:NINA.View.Sequencer.MiniSequencer;assembly=NINA.Sequencer"
     xmlns:nina="clr-namespace:NINA.View.Sequencer;assembly=NINA.Sequencer"
-    xmlns:ninactrl="clr-namespace:NINACustomControlLibrary;assembly=NINACustomControlLibrary"
+    xmlns:ninactrl="clr-namespace:NINA.CustomControlLibrary;assembly=NINA.CustomControlLibrary"
     xmlns:ns="clr-namespace:NINA.Core.Locale;assembly=NINA.Core"
-    xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
+    xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Contrib.Wpf"
+    xmlns:oxys="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf.Shared"
     xmlns:prompts="clr-namespace:PixInsightTools.Prompts"
     xmlns:properties="clr-namespace:PixInsightTools.Properties"
     xmlns:rules="clr-namespace:NINA.Core.Utility.ValidationRules;assembly=NINA.Core"
@@ -247,10 +248,10 @@
                                                 PlotAreaBackground="{StaticResource BackgroundBrush}"
                                                 PlotAreaBorderColor="{Binding Path=Color, Source={StaticResource BorderBrush}}">
                                                 <oxy:Plot.TrackerDefinitions>
-                                                    <oxy:TrackerDefinition TrackerKey="NoiseProperties">
-                                                        <oxy:TrackerDefinition.TrackerTemplate>
+                                                    <oxys:TrackerDefinition TrackerKey="NoiseProperties">
+                                                        <oxys:TrackerDefinition.TrackerTemplate>
                                                             <ControlTemplate>
-                                                                <oxy:TrackerControl
+                                                                <oxys:TrackerControl
                                                                     BorderBrush="{StaticResource BorderBrush}"
                                                                     BorderThickness="1"
                                                                     LineExtents="{Binding PlotModel.PlotArea}"
@@ -266,10 +267,10 @@
                                                                         </StackPanel>
                                                                     </StackPanel>
 
-                                                                </oxy:TrackerControl>
+                                                                </oxys:TrackerControl>
                                                             </ControlTemplate>
-                                                        </oxy:TrackerDefinition.TrackerTemplate>
-                                                    </oxy:TrackerDefinition>
+                                                        </oxys:TrackerDefinition.TrackerTemplate>
+                                                    </oxys:TrackerDefinition>
                                                 </oxy:Plot.TrackerDefinitions>
 
                                                 <oxy:Plot.Axes>
@@ -280,7 +281,6 @@
                                                         IsZoomEnabled="False"
                                                         MajorGridlineColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}, Converter={StaticResource SetAlphaToColorConverter}, ConverterParameter=60}"
                                                         MajorGridlineStyle="LongDash"
-                                                        
                                                         Position="Left"
                                                         TextColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}}"
                                                         TicklineColor="{Binding Path=Color, Source={StaticResource SecondaryBrush}}" />

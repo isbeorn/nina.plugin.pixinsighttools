@@ -31,7 +31,7 @@ namespace PixInsightTools.Scripts {
                 var securitySettings = new MutexSecurity();
                 securitySettings.AddAccessRule(allowEveryoneRule);
 
-                using (var mutex = new Mutex(false, mutexid, out var createNew, securitySettings)) {
+                using (var mutex = new Mutex(false, mutexid, out var createNew)) {
                     var hasHandle = false;
                     try {
                         try {
