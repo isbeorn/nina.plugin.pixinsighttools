@@ -115,7 +115,7 @@ namespace PixInsightTools.Dockables {
 
             if (prompt.Continue) {
                 if (!string.IsNullOrEmpty(prompt.Target)) {
-                    var colorTab = new ColorTab(prompt.Target, prompt.RedChannel.PngPath, prompt.GreenChannel.PngPath, prompt.BlueChannel.PngPath);
+                    var colorTab = new ColorTab(prompt.Target, prompt.RedChannel.PngPath, prompt.GreenChannel.PngPath, prompt.BlueChannel.PngPath, prompt.StackEachNrOfFrames);
                     colorTab.Locked = false;
                     FilterTabs.Add(colorTab);
                 }
@@ -455,13 +455,15 @@ namespace PixInsightTools.Dockables {
                                     if (colorTab != null && colorTab is ColorTab c 
                                             && (c.RedPath == tab.PngPath || c.GreenPath == tab.PngPath || c.BluePath == tab.PngPath) // Skip color combination if the current tab doesn't contain relevant data for the combination
                                     ) {
-                                        c.Locked = true;
-                                        var colorImage = await new PixInsightColorCombine(c.RedPath, c.GreenPath, c.BluePath, c.EnableSCNR, c.SCNRAmount, target, workingDir, slot).Run(progress, workerCTS.Token);
+                                        if(c.ShouldStack()) { 
+                                            c.Locked = true;
+                                            var colorImage = await new PixInsightColorCombine(c.RedPath, c.GreenPath, c.BluePath, c.EnableSCNR, c.SCNRAmount, target, workingDir, slot).Run(progress, workerCTS.Token);
 
-                                        var decoder2 = new PngBitmapDecoder(new Uri(colorImage), BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
-                                        c.Stack = decoder2.Frames[0];
-                                        c.Stack.Freeze();
-                                        c.Locked = false;
+                                            var decoder2 = new PngBitmapDecoder(new Uri(colorImage), BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
+                                            c.Stack = decoder2.Frames[0];
+                                            c.Stack.Freeze();
+                                            c.Locked = false;
+                                        }
                                     }
                                 }
 

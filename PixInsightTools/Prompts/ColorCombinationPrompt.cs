@@ -14,6 +14,7 @@ namespace PixInsightTools.Prompts {
         public ColorCombinationPrompt(AsyncObservableCollection<FilterTab> filterTabs) {
             this.allTabs = filterTabs;
             this.ContinueCommand = new GalaSoft.MvvmLight.Command.RelayCommand(() => { Continue = true; });
+            this.StackEachNrOfFrames = 1;
 
             Targets = allTabs.GroupBy(x => x.Target).Where(g => g.All(x => x.Filter != ColorTab.RGB)).Select(x => x.First()).Select(x => x.Target).ToList();
 
@@ -70,6 +71,8 @@ namespace PixInsightTools.Prompts {
         public FilterTab RedChannel { get; set; }
         public FilterTab BlueChannel { get; set; }
         public FilterTab GreenChannel { get; set; }
+
+        public int StackEachNrOfFrames { get; set; }
 
         public bool Continue { get; set; } = false;
 
