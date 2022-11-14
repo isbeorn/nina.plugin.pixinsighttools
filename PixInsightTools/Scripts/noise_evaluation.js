@@ -29,6 +29,8 @@
         let noiseSigma = noiseEval.sigma;
         let noisePct = 100 * noiseEval.count / image.selectedRect.area;
 
+        window[0].forceClose();
+
         let filecontent = noiseSigma.toString() + '|' + noisePct.toString();
         console.writeln("Writing textfile: " + outputDir + "/" + guid + "_" + "done_noise_evaluation.txt - " + filecontent);
         File.writeTextFile(outputDir + "/" + guid + "_" + "done_noise_evaluation.txt", filecontent);
