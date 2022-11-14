@@ -20,6 +20,7 @@ using PixInsightTools.Prompts;
 using PixInsightTools.Scripts;
 using PixInsightTools.Utility;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
@@ -239,6 +240,8 @@ namespace PixInsightTools.Dockables {
             }
         }
 
+        public ConcurrentDictionary<Guid, bool> ActiveFlatStackingProcesses { get; } = new ConcurrentDictionary<Guid, bool>();
+
         private string GetStackName(string target, string filter) {
             return $"MASTER_LIGHT_{CoreUtil.ReplaceAllInvalidFilenameChars(target)}_{filter}.xisf";
         }
@@ -282,6 +285,11 @@ namespace PixInsightTools.Dockables {
                             applicationStatusMediator.StatusUpdate(new ApplicationStatus() { Source = "Live Stack", Status = "Waiting for next frame" });
 
                             var item = await queue.DequeueAsync(workerCTS.Token);
+
+                            while(ActiveFlatStackingProcesses.Count > 0) {
+                                applicationStatusMediator.StatusUpdate(new ApplicationStatus() { Source = "Live Stack", Status = "Flat stacking in progress. Waiting for process to finish..." });
+                                await Task.Delay(1000, workerCTS.Token);
+                            }
 
                             var failedGates = qualityGates.Where(x => !x.Passes(item));
                             if (failedGates.Count() > 0) {

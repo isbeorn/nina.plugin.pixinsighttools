@@ -11,6 +11,13 @@
             <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
         </DataTemplate.Resources>
         <nina:SequenceBlockView>
+            <nina:SequenceBlockView.SequenceItemContent>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Text="Wait for flat stack?" />
+                    <CheckBox Margin="5,0,0,0" IsChecked="{Binding WaitForStack, Mode=TwoWay}" />
+                </StackPanel>
+
+            </nina:SequenceBlockView.SequenceItemContent>
             <nina:SequenceBlockView.SequenceItemProgressContent>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Flats In Queue" />

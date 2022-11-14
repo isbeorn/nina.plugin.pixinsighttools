@@ -51,6 +51,7 @@ namespace PixInsightTools.Instructions {
 
         public override object Clone() {
             var clone = new StackFlats(this) {
+                WaitForStack = WaitForStack
             };
 
             return clone;
@@ -177,15 +178,32 @@ namespace PixInsightTools.Instructions {
             }
         }
 
+        private bool waitForStack = true;
+        [JsonProperty]
+        public bool WaitForStack {
+            get => waitForStack;
+            set {
+                waitForStack = value;
+                RaisePropertyChanged();
+            }
+        }
+
         public override async Task Execute(IProgress<ApplicationStatus> progress, CancellationToken token) {
-            await Task.Run(async () => {
+            var id = Guid.NewGuid();
+            PixInsightToolsMediator.Instance.ReportFlatStacking(id);
+
+            
+            var workTask = Task.Run(async () => {
+
                 Logger.Info("Stop listening for flat frames to calibrate");
                 queue.CompleteAdding();
                 imageSaveMediator.ImageSaved -= ImageSaveMediator_ImageSaved;
 
-                if (queueEntries <= 0 && FlatsToIntegrate.Keys.Count == 0) {
-                    Logger.Info("No flat frames to stack");
-                } else {
+                try {
+
+                    if (queueEntries <= 0 && FlatsToIntegrate.Keys.Count == 0) {
+                        Logger.Info("No flat frames to stack");
+                    } else {
 
                     Logger.Info("Finishing up remaining flat calibration");
                     progress?.Report(new ApplicationStatus() { Status = $"Waiting for flat calibration to finish" });
@@ -224,8 +242,15 @@ namespace PixInsightTools.Instructions {
                             Logger.Error($"Failed to generate flat master for filter {filter}", ex);
                         }
                     }
+                    }
+                } finally {
+                    PixInsightToolsMediator.Instance.ReportFlatStackingFinished(id);
                 }
             });
+
+            if(WaitForStack) {
+                await workerTask;
+            }
         }
 
         private CalibrationFrame GetBiasMaster(ImageSavedEventArgs item) {

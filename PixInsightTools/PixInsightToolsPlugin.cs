@@ -49,6 +49,15 @@ namespace PixInsightTools {
             stackVM.AddFlatFrame(flat);
         }
 
+        public void ReportFlatStacking(Guid process) {
+            stackVM.ActiveFlatStackingProcesses.AddOrUpdate(process, true, (key, oldVal) => true);
+        }
+
+        public bool ReportFlatStackingFinished(Guid process) {
+            stackVM.ActiveFlatStackingProcesses.TryRemove(process, out var success);
+            return success;
+        }
+
         public Task StartLiveStack() {
             return stackVM.StartLiveStackCommand.ExecuteAsync(null);
         }
