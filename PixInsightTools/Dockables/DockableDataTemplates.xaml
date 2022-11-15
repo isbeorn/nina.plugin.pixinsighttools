@@ -377,6 +377,12 @@
                                                 Margin="5,0,0,0"
                                                 VerticalAlignment="Center"
                                                 Text="{Binding SCNRAmount}" />
+                                            <TextBlock
+                                                Margin="5,0,0,0"
+                                                VerticalAlignment="Center"
+                                                Text="{Binding FrameCounter}" />
+                                            <TextBlock VerticalAlignment="Center" Text=" / " />
+                                            <TextBlock VerticalAlignment="Center" Text="{Binding StackEachNrOfFrames}" />
 
                                         </StackPanel>
                                     </DataTemplate>
@@ -479,6 +485,7 @@
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
+                <RowDefinition />
             </Grid.RowDefinitions>
 
             <TextBlock VerticalAlignment="Center" Text="Target" />
@@ -524,10 +531,20 @@
                 ItemsSource="{Binding FilterTabs}"
                 SelectedItem="{Binding BlueChannel}" />
 
+            <TextBlock
+                Grid.Row="4"
+                VerticalAlignment="Center"
+                Text="Color Stack Every #" />
+            <TextBox
+                Grid.Row="4"
+                Grid.Column="1"
+                Margin="5,0,0,0"
+                VerticalContentAlignment="Center"
+                Text="{Binding StackEachNrOfFrames}" />
 
 
             <Button
-                Grid.Row="4"
+                Grid.Row="5"
                 Height="25"
                 Margin="5"
                 util:ButtonHelper.DialogResult="False">
@@ -535,7 +552,7 @@
             </Button>
 
             <Button
-                Grid.Row="4"
+                Grid.Row="5"
                 Grid.Column="1"
                 Height="25"
                 Margin="5"

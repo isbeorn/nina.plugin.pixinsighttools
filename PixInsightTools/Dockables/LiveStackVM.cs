@@ -20,6 +20,7 @@ using PixInsightTools.Prompts;
 using PixInsightTools.Scripts;
 using PixInsightTools.Utility;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
@@ -114,7 +115,7 @@ namespace PixInsightTools.Dockables {
 
             if (prompt.Continue) {
                 if (!string.IsNullOrEmpty(prompt.Target)) {
-                    var colorTab = new ColorTab(prompt.Target, prompt.RedChannel.PngPath, prompt.GreenChannel.PngPath, prompt.BlueChannel.PngPath);
+                    var colorTab = new ColorTab(prompt.Target, prompt.RedChannel.PngPath, prompt.GreenChannel.PngPath, prompt.BlueChannel.PngPath, prompt.StackEachNrOfFrames);
                     colorTab.Locked = false;
                     FilterTabs.Add(colorTab);
                 }
@@ -239,6 +240,8 @@ namespace PixInsightTools.Dockables {
             }
         }
 
+        public ConcurrentDictionary<Guid, bool> ActiveFlatStackingProcesses { get; } = new ConcurrentDictionary<Guid, bool>();
+
         private string GetStackName(string target, string filter) {
             return $"MASTER_LIGHT_{CoreUtil.ReplaceAllInvalidFilenameChars(target)}_{filter}.xisf";
         }
@@ -282,6 +285,11 @@ namespace PixInsightTools.Dockables {
                             applicationStatusMediator.StatusUpdate(new ApplicationStatus() { Source = "Live Stack", Status = "Waiting for next frame" });
 
                             var item = await queue.DequeueAsync(workerCTS.Token);
+
+                            while(ActiveFlatStackingProcesses.Count > 0) {
+                                applicationStatusMediator.StatusUpdate(new ApplicationStatus() { Source = "Live Stack", Status = "Flat stacking in progress. Waiting for process to finish..." });
+                                await Task.Delay(1000, workerCTS.Token);
+                            }
 
                             var failedGates = qualityGates.Where(x => !x.Passes(item));
                             if (failedGates.Count() > 0) {
@@ -447,13 +455,15 @@ namespace PixInsightTools.Dockables {
                                     if (colorTab != null && colorTab is ColorTab c 
                                             && (c.RedPath == tab.PngPath || c.GreenPath == tab.PngPath || c.BluePath == tab.PngPath) // Skip color combination if the current tab doesn't contain relevant data for the combination
                                     ) {
-                                        c.Locked = true;
-                                        var colorImage = await new PixInsightColorCombine(c.RedPath, c.GreenPath, c.BluePath, c.EnableSCNR, c.SCNRAmount, target, workingDir, slot).Run(progress, workerCTS.Token);
+                                        if(c.ShouldStack()) { 
+                                            c.Locked = true;
+                                            var colorImage = await new PixInsightColorCombine(c.RedPath, c.GreenPath, c.BluePath, c.EnableSCNR, c.SCNRAmount, target, workingDir, slot).Run(progress, workerCTS.Token);
 
-                                        var decoder2 = new PngBitmapDecoder(new Uri(colorImage), BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
-                                        c.Stack = decoder2.Frames[0];
-                                        c.Stack.Freeze();
-                                        c.Locked = false;
+                                            var decoder2 = new PngBitmapDecoder(new Uri(colorImage), BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
+                                            c.Stack = decoder2.Frames[0];
+                                            c.Stack.Freeze();
+                                            c.Locked = false;
+                                        }
                                     }
                                 }
 

@@ -1,7 +1,11 @@
 ﻿# Changelog
 
-## 1.0.0.0
+## 1.0.0.1
 - Upgrade to .NET7
+
+## 0.1.8.0
+- Added an option to "Stack Flats" instruction to stack the flats in the background instead of waiting for them to finish. The live stack loop will then wait for the flats to be stacked first before starting to stack the light frames.
+- When adding a color tab you can now specify to only do a color stack for every x number of frames
 
 ## 0.1.7.2
 - When a target name contains an illegal path character, this is now properly escaped for the stack name to work
