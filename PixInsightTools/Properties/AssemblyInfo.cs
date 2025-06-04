@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("PixInsight Tools")]
 [assembly: AssemblyDescription("A bundle of tools to interact with PixInsight from N.I.N.A. for the purpose of live stacking")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Stefan Berg")]
+[assembly: AssemblyCompany("Stefan Berg @isbeorn")]
 [assembly: AssemblyProduct("NINA.Plugins")]
-[assembly: AssemblyCopyright("Copyright ©  2021-2022")]
+[assembly: AssemblyCopyright("Copyright ©  2021-2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -26,11 +26,11 @@ using System.Runtime.InteropServices;
 
 //The assembly versioning
 //Should be incremented for each new release build of a plugin
-[assembly: AssemblyVersion("0.1.8.0")]
-[assembly: AssemblyFileVersion("0.1.8.0")]
+[assembly: AssemblyVersion("1.0.0.3")]
+[assembly: AssemblyFileVersion("1.0.0.3")]
 
 //The minimum Version of N.I.N.A. that this plugin is compatible with
-[assembly: AssemblyMetadata("MinimumApplicationVersion", "2.0.0.9001")]
+[assembly: AssemblyMetadata("MinimumApplicationVersion", "3.0.0.0")]
 
 //Your plugin homepage - omit if not applicaple
 [assembly: AssemblyMetadata("Homepage", "https://www.patreon.com/stefanberg/")]
@@ -39,17 +39,17 @@ using System.Runtime.InteropServices;
 //The url to the license
 [assembly: AssemblyMetadata("LicenseURL", "https://www.mozilla.org/en-US/MPL/2.0/")]
 //The repository where your pluggin is hosted
-[assembly: AssemblyMetadata("Repository", "https://bitbucket.org/Isbeorn/nina.plugin.pixinsighttools/src/master/")]
+[assembly: AssemblyMetadata("Repository", "https://github.com/isbeorn/nina.plugin.pixinsighttools")]
 
-[assembly: AssemblyMetadata("ChangelogURL", "https://bitbucket.org/Isbeorn/nina.plugin.pixinsighttools/src/master/PixInsightTools/Changelog.md")]
+[assembly: AssemblyMetadata("ChangelogURL", "https://github.com/isbeorn/nina.plugin.pixinsighttools/blob/master/PixInsightTools/Changelog.md")]
 
 //Common tags that quickly describe your plugin
 [assembly: AssemblyMetadata("Tags", "PixInsight,Sequencer")]
 
 //The featured logo that will be displayed in the plugin list next to the name
-[assembly: AssemblyMetadata("FeaturedImageURL", "https://bitbucket.org/Isbeorn/nina.plugin.pixinsighttools/downloads/logo.png")]
+[assembly: AssemblyMetadata("FeaturedImageURL", "https://github.com/isbeorn/nina.plugin.pixinsighttools/blob/master/PixInsightTools/logo.png?raw=true")]
 //An example screenshot of your plugin in action
-[assembly: AssemblyMetadata("ScreenshotURL", "https://bitbucket.org/Isbeorn/nina.plugin.pixinsighttools/downloads/LiveStackTab.png")]
+[assembly: AssemblyMetadata("ScreenshotURL", "https://github.com/isbeorn/nina.plugin.pixinsighttools/blob/master/PixInsightTools/LiveStackTab.png?raw=true")]
 //An additional example screenshot of your plugin in action
 [assembly: AssemblyMetadata("AltScreenshotURL", "")]
 [assembly: AssemblyMetadata("LongDescription", @"This plugin provides instructions and capabilities to interact with PixInsight and use the output to display a live stack inside N.I.N.A.

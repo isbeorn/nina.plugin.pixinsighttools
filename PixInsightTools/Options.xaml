@@ -5,7 +5,7 @@
     xmlns:converter="clr-namespace:NINA.Core.Utility.Converters;assembly=NINA.Core"
     xmlns:local="clr-namespace:PixInsightTools"
     xmlns:model="clr-namespace:PixInsightTools.Model"
-    xmlns:ninactrl="clr-namespace:NINACustomControlLibrary;assembly=NINACustomControlLibrary"
+    xmlns:ninactrl="clr-namespace:NINA.CustomControlLibrary;assembly=NINA.CustomControlLibrary"
     xmlns:ns="clr-namespace:NINA.Core.Locale;assembly=NINA.Core"
     xmlns:prompts="clr-namespace:PixInsightTools.Prompts"
     xmlns:properties="clr-namespace:PixInsightTools.Properties"

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PixInsightTools.Scripts {
     class PixInsightScript {
-        protected readonly static string scriptFolder = Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\NINA\Plugins\PixInsight Tools\Scripts");
+        protected readonly static string scriptFolder = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Scripts");
         protected string workingDir;
         protected int pixInsightSlot;
 
@@ -61,6 +61,7 @@ namespace PixInsightTools.Scripts {
             await statusFileCleanup();
 
             var psi = new ProcessStartInfo($"\"{Properties.Settings.Default.PixInsightLocation}\"", arguments);
+            psi.UseShellExecute = true;
             Logger.Info($"Starting process: {psi.FileName} {psi.Arguments}");
             var p = Process.Start(psi);
             p.PriorityClass = ProcessPriorityClass.BelowNormal;
