@@ -1,3 +1,10 @@
+# This is an example Starter pipeline configuration
+# Use a skeleton to build, test and deploy using manual and parallel steps
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+
+image: atlassian/default-image:3
+
 pipelines:
   # A build pipeline to automatically create a new build artifact and manifest from the nina plugin
   ## The following custom variables have to be set in your repository 
@@ -17,14 +24,14 @@ pipelines:
   ### <EnableWindowsTargeting>true</EnableWindowsTargeting>
   custom:   
     publish:
-        - step:
+      - step:
             name: dotnet build
             clone:
                 lfs: true
             image: mcr.microsoft.com/dotnet/sdk:7.0
             caches:
               - dotnetcore
-            script:
+          script:
               ## Create artifact folders
               - mkdir -p ${BITBUCKET_CLONE_DIR}/artifacts
               - mkdir -p ${BITBUCKET_CLONE_DIR}/packages  
@@ -44,10 +51,10 @@ pipelines:
             artifacts:
               - packages/**
               - artifacts/CreateNET7Manifest.ps1
-        - step:
+    - step:
             name: package upload and manifest creation
             image: mcr.microsoft.com/powershell:latest
-            script:
+        script:
               ## Create manifest json and upload to bitbucket downloads
               - pwsh ${BITBUCKET_CLONE_DIR}/artifacts/CreateNET7Manifest.ps1 -file ${BITBUCKET_CLONE_DIR}/packages/${PLUGIN_DLL_NAME}.dll -createArchive -includeAll -appendVersionToArchive -uploadToBitbucket -bitbucketUserName $BITBUCKET_USERNAME -bitbucketPassword $BITBUCKET_APP_PASSWORD -bitbucketRepositoryOwner $BITBUCKET_USERNAME -bitbucketRepository $BITBUCKET_REPO_SLUG
               # Output manifest json
